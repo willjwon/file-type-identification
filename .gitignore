@@ -18,6 +18,3 @@ cmake_install.cmake
 
 # Makefile
 Makefile
-
-# Build executable
-FileFragmentGenerator
