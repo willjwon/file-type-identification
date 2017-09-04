@@ -13,6 +13,8 @@ __pycache__/
 # CLion and CMake
 cmake-build-debug/
 cmake_install.cmake
+CMakeFiles/
+CMakeCache.txt
 *.make
 
 # Makefile
