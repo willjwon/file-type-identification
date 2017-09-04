@@ -3,11 +3,13 @@
 #include <vector>
 #include "FileManager.hpp"
 
+using json = nlohmann::json;
+
 int baryberri::FileManager::numOfFileTypes = 0;
 bool baryberri::FileManager::numOfFileTypesHasSet = false;
+static json* settings = nullptr;
 
-baryberri::FileManager::FileManager(json* settings) {
-    this->settings = settings;
+baryberri::FileManager::FileManager() {
     if (!numOfFileTypesHasSet) {
         numOfFileTypesHasSet = true;
         std::vector<std::string> fileTypes = (*settings)["fileType"];
@@ -19,6 +21,10 @@ baryberri::FileManager::~FileManager() {
     if (currentDirectory != nullptr) {
         closedir(currentDirectory);
     }
+}
+
+void baryberri::FileManager::setSettings(json* settings) {
+    this->settings = settings;
 }
 
 void baryberri::FileManager::setToFileType(std::string fileType) {
@@ -46,6 +52,10 @@ const std::string baryberri::FileManager::getCurrentFileType() {
 
 const int baryberri::FileManager::getNumOfFileTypes() {
     return numOfFileTypes;
+}
+
+const json* baryberri::FileManager::getSettings() {
+    return settings;
 }
 
 const bool baryberri::FileManager::isDirectoryExist() {

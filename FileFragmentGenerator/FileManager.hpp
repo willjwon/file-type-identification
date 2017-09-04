@@ -16,10 +16,14 @@ public:
     /// as it doesn't call setToNextFileType automatically, it should be called manually../
     ///
     /// \param settings json settings file to use
-    explicit FileManager(json* settings);
+    explicit FileManager();
 
     /// close the directory before FileManager destructs.
     ~FileManager();
+
+    /// set settings to a given json pointer.
+    /// \param settings pointer to json settings to set
+    void setSettings(json* settings);
 
     /// set a FileManager to a specific given type.
     ///
@@ -40,6 +44,11 @@ public:
     ///
     /// \return numOfFileTypes;
     static const int getNumOfFileTypes();
+
+    /// get settings
+    ///
+    /// \return settings
+    static const json* getSettings();
 
     /// Returns is directory of given file type exists, and well-opened.
     ///
@@ -63,7 +72,7 @@ public:
 
 private:
     /// json settings file that's loaded.
-    json* settings;
+    static json* settings;
 
     /// settings has "fileType": ["html", "hwp", "pdf", "docx", "xlsx"] field.
     /// currentFileType indicates currently selected file type.

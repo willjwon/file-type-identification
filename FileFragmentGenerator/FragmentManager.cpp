@@ -3,13 +3,12 @@
 
 std::string baryberri::FragmentManager::outputFilePath = "";
 
-baryberri::FragmentManager::FragmentManager(FileManager* fileManager, json* settings) {
-    this->settings = settings;
+baryberri::FragmentManager::FragmentManager(FileManager* fileManager) {
     this->fileManager = fileManager;
 
     offset = 0;
-    gramSize = (*settings)["settings"]["gram"];
-    fragmentSize = (*settings)["settings"]["fragmentSize"];
+    gramSize = (*(fileManager->getSettings()))["settings"]["gram"];
+    fragmentSize = (*(fileManager->getSettings())["settings"]["fragmentSize"];
 }
 
 baryberri::FragmentManager::~FragmentManager() {
@@ -89,7 +88,7 @@ void baryberri::FragmentManager::saveRawFragmentDataIntoCSV(char* const& fragmen
     for (int i = 0; i < fragmentSize; i++) {
         outputCSVStream << int((unsigned char)(fragmentArray[i])) << ",";
     }
-    int fileTypeKey = (*settings)["typeKey"][(*fileManager).getCurrentFileType()];
+    int fileTypeKey = (*(fileManager->getSettings()))["typeKey"][(*fileManager).getCurrentFileType()];
     int numOfFileTypes = (*fileManager).getNumOfFileTypes();
     for (int i = 0; i < numOfFileTypes; i++) {
         if (i == fileTypeKey) {
@@ -109,7 +108,7 @@ void baryberri::FragmentManager::saveGramDataIntoCSV(int* const & gramArray) {
     for (int i = 0; i < int(pow(2, 8 * gramSize)); i++) {
         outputCSVStream << gramArray[i] << ",";
     }
-    int fileTypeKey = (*settings)["typeKey"][(*fileManager).getCurrentFileType()];
+    int fileTypeKey = (*(fileManager->getSettings()))["typeKey"][(*fileManager).getCurrentFileType()];
     int numOfFileTypes = (*fileManager).getNumOfFileTypes();
     for (int i = 0; i < numOfFileTypes; i++) {
         if (i == fileTypeKey) {
