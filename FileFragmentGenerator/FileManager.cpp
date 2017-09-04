@@ -1,9 +1,12 @@
 #include <dirent.h>
 #include <iostream>
+#include <vector>
 #include "FileManager.hpp"
 
 baryberri::FileManager::FileManager(json *settings) {
     this->settings = settings;
+    std::vector<std::string> fileTypes = (*settings)["fileType"];
+    FileManager::numOfFileTypes = (int)fileTypes.size();
 }
 
 baryberri::FileManager::~FileManager() {
@@ -14,6 +17,10 @@ baryberri::FileManager::~FileManager() {
 
 const std::string baryberri::FileManager::getCurrentFileType() {
     return currentFileType;
+}
+
+static const int baryberri::FileManager::getNumOfFileTypes() {
+    return numOfFileTypes;
 }
 
 const bool baryberri::FileManager::isDirectoryExist() {

@@ -26,6 +26,11 @@ public:
     /// \return currentFileType
     const std::string getCurrentFileType();
 
+    /// get numOfFileTypes;
+    ///
+    /// \return numOfFileTypes;
+    static const int getNumOfFileTypes();
+
     /// Returns is directory of given file type exists, and well-opened.
     ///
     /// \return true if directory exists and opened, otherwise false.
@@ -61,6 +66,9 @@ private:
 
     /// indicates the current file.
     struct dirent* currentFile;
+
+    /// get how many file types exist.
+    static int numOfFileTypes;
 
     /// checks whether given str has a given suffix.
     /// \param str string to test whether it has given suffix or not
