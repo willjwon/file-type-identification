@@ -1,6 +1,8 @@
 #include <iostream>
 #include "FragmentManager.hpp"
 
+std::string baryberri::FragmentManager::outputFilePath = "";
+
 baryberri::FragmentManager::FragmentManager(FileManager* fileManager, json* settings) {
     this->settings = settings;
     this->fileManager = fileManager;
@@ -8,16 +10,15 @@ baryberri::FragmentManager::FragmentManager(FileManager* fileManager, json* sett
     offset = 0;
     gramSize = (*settings)["settings"]["gram"];
     fragmentSize = (*settings)["settings"]["fragmentSize"];
-
-    std::string outputPath = (*settings)["outputCSV"];
-
-    setToNextFile();
-    outputCSVStream.open(outputPath, std::fstream::app);
 }
 
 baryberri::FragmentManager::~FragmentManager() {
     if (currentFileStream.is_open()) {
         currentFileStream.close();
+    }
+
+    if (outputCSVStream.is_open()) {
+        outputCSVStream.close();
     }
 }
 
@@ -27,7 +28,34 @@ void baryberri::FragmentManager::generateFragment(const int fragmentNumber) {
     }
 }
 
-void baryberri::FragmentManager:: setToNextFile() {
+void baryberri::FragmentManager::getAndSaveFragment() {
+    auto* fragmentArray = new char[fragmentSize];
+    getFragment(fragmentArray);
+
+    if (gramSize == 0) {
+        saveRawFragmentDataIntoCSV(fragmentArray);
+    } else {
+        auto* gramArray = new int[int(pow(2, 8 * gramSize))];
+        for (int i = 0; i < int(pow(2, 8 * gramSize)); i++) {
+            gramArray[i] = 0;
+        }
+        computeNgram(fragmentArray, gramArray);
+        saveGramDataIntoCSV(gramArray);
+    }
+}
+
+void baryberri::FragmentManager::changeOutputFilePath(const std::string& newOutputFilePath) {
+    outputFilePath = newOutputFilePath;
+}
+
+void baryberri::FragmentManager::changeToNewOutputFile() {
+    if (outputCSVStream.is_open()) {
+        outputCSVStream.close();
+    }
+    outputCSVStream.open(outputFilePath, std::fstream::app);
+}
+
+void baryberri::FragmentManager::setToNextFile() {
     if (currentFileStream.is_open()) {
         currentFileStream.close();
     }
@@ -97,21 +125,7 @@ void baryberri::FragmentManager::saveGramDataIntoCSV(int* const & gramArray) {
     }
 }
 
-void baryberri::FragmentManager::getAndSaveFragment() {
-    auto* fragmentArray = new char[fragmentSize];
-    getFragment(fragmentArray);
 
-    if (gramSize == 0) {
-        saveRawFragmentDataIntoCSV(fragmentArray);
-    } else {
-        auto* gramArray = new int[int(pow(2, 8 * gramSize))];
-        for (int i = 0; i < int(pow(2, 8 * gramSize)); i++) {
-            gramArray[i] = 0;
-        }
-        computeNgram(fragmentArray, gramArray);
-        saveGramDataIntoCSV(gramArray);
-    }
-}
 
 void baryberri::FragmentManager::setToNextOffset() {
     // offset has `(numerator / denominator) * fragmentSize` format.

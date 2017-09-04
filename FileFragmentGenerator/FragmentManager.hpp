@@ -28,6 +28,17 @@ public:
     /// \returns true if file fragments are well-generated, otherwise returns false
     void generateFragment(const int fragmentNumber);
 
+    /// get a fragment, and save it into csv file located by json settings.
+    void getAndSaveFragment();
+
+    /// Change outputFilePath to new outputFilePath.
+    ///
+    /// \param newOutputFilePath new ouputFilepath to set
+    static void changeOutputFilePath(const std::string& newOutputFilePath);
+
+    /// update outputCSVStream to new outputFilePath.
+    void changeToNewOutputFile();
+
 private:
     json* settings;
     FileManager* fileManager;
@@ -36,6 +47,7 @@ private:
     int offset;
     int gramSize;
     int fragmentSize;
+    static std::string outputFilePath;
 
     /// set currentFileStream to next file.
     void setToNextFile();
@@ -51,9 +63,6 @@ private:
 
     /// save n-gram data into csv file.
     void saveGramDataIntoCSV(int* const& gramArray);
-
-    /// get a fragment, and save it into csv file located by json settings.
-    void getAndSaveFragment();
 
     /// set offset to next available offset.
     void setToNextOffset();
