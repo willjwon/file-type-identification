@@ -1,7 +1,7 @@
 #include <iostream>
 #include "FragmentManager.hpp"
 
-baryberri::FragmentManager::FragmentManager(FileManager *fileManager, json *settings) {
+baryberri::FragmentManager::FragmentManager(FileManager* fileManager, json* settings) {
     this->settings = settings;
     this->fileManager = fileManager;
 
@@ -62,7 +62,19 @@ void baryberri::FragmentManager::saveRawFragmentDataIntoCSV(char* const& fragmen
         outputCSVStream << int((unsigned char)(fragmentArray[i])) << ",";
     }
     int fileTypeKey = (*settings)["typeKey"][(*fileManager).getCurrentFileType()];
-    outputCSVStream << fileTypeKey << std::endl;
+    int numOfFileTypes = (*fileManager).getNumOfFileTypes();
+    for (int i = 0; i < numOfFileTypes; i++) {
+        if (i == fileTypeKey) {
+            outputCSVStream << 1;
+        } else {
+            outputCSVStream << 0;
+        }
+        if (i != numOfFileTypes - 1) {
+            outputCSVStream << ",";
+        } else {
+            outputCSVStream << std::endl;
+        }
+    }
 }
 
 void baryberri::FragmentManager::saveGramDataIntoCSV(int* const & gramArray) {
@@ -70,7 +82,19 @@ void baryberri::FragmentManager::saveGramDataIntoCSV(int* const & gramArray) {
         outputCSVStream << gramArray[i] << ",";
     }
     int fileTypeKey = (*settings)["typeKey"][(*fileManager).getCurrentFileType()];
-    outputCSVStream << fileTypeKey << std::endl;
+    int numOfFileTypes = (*fileManager).getNumOfFileTypes();
+    for (int i = 0; i < numOfFileTypes; i++) {
+        if (i == fileTypeKey) {
+            outputCSVStream << 1;
+        } else {
+            outputCSVStream << 0;
+        }
+        if (i != numOfFileTypes - 1) {
+            outputCSVStream << ",";
+        } else {
+            outputCSVStream << std::endl;
+        }
+    }
 }
 
 void baryberri::FragmentManager::getAndSaveFragment() {
