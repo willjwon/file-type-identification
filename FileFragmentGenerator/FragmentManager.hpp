@@ -17,7 +17,7 @@ public:
     ///
     /// \param fileManager a FileManager pointer to use
     /// \param settings a json settings file
-    FragmentManager(FileManager* fileManager, json* settings);
+    explicit FragmentManager(FileManager* fileManager, json* settings);
 
     /// Destruct FragmentManager, makes sure currentFileStream is closed before object destruction.
     ~FragmentManager();

@@ -13,7 +13,7 @@ namespace baryberri {
 class baryberri::FileManager {
 public:
     /// create a new FileManager with given json settings.
-    /// as it doesn't call setToNextFileType automatically, it should be called manually.
+    /// as it doesn't call setToNextFileType automatically, it should be called manually../
     ///
     /// \param settings json settings file to use
     explicit FileManager(json* settings);
@@ -25,7 +25,6 @@ public:
     ///
     /// \param fileType fileType to set
     void setToFileType(std::string fileType);
-
 
     /// set a FileManager to a specific given directory path.
     ///
@@ -49,8 +48,9 @@ public:
 
     /// change currentFileType and currentTypesInputDirectoryPath to next available file type.
     ///
+    /// \param reset true if it's wanted to reset currently selected file type.
     /// \return false if there's no next file type available, else returns true.
-    const bool setToNextFileType();
+    const bool setToNextFileType(bool reset);
 
     /// gets an available file's path inside currentTypesInputDirectoryPath.
     /// the file is checked whether it has same corresponding extension with currentFileType.
@@ -80,6 +80,9 @@ private:
 
     /// get how many file types exist.
     static int numOfFileTypes;
+
+    /// true if numOfFileTypes is set.
+    static bool numOfFileTypesHasSet;
 
     /// checks whether given str has a given suffix.
     /// \param str string to test whether it has given suffix or not

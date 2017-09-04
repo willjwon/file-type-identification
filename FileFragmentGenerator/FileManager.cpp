@@ -4,11 +4,15 @@
 #include "FileManager.hpp"
 
 int baryberri::FileManager::numOfFileTypes = 0;
+bool baryberri::FileManager::numOfFileTypesHasSet = false;
 
 baryberri::FileManager::FileManager(json* settings) {
     this->settings = settings;
-    std::vector<std::string> fileTypes = (*settings)["fileType"];
-    numOfFileTypes = (int)fileTypes.size();
+    if (!numOfFileTypesHasSet) {
+        numOfFileTypesHasSet = true;
+        std::vector<std::string> fileTypes = (*settings)["fileType"];
+        numOfFileTypes = (int)fileTypes.size();
+    }
 }
 
 baryberri::FileManager::~FileManager() {
@@ -32,7 +36,7 @@ void baryberri::FileManager::setToFilePath(std::string directoryPath) {
     if (currentDirectory != nullptr) {
         closedir(currentDirectory);
     }
-    
+
     currentDirectory = opendir(directoryPath.c_str());
 }
 
@@ -48,7 +52,7 @@ const bool baryberri::FileManager::isDirectoryExist() {
     return currentDirectory != nullptr;
 }
 
-const bool baryberri::FileManager::setToNextFileType() {
+const bool baryberri::FileManager::setToNextFileType(bool reset) {
     static int currentlySelectedFileType = -1;
 
     auto fileTypes = (*settings)["fileType"];
@@ -58,17 +62,21 @@ const bool baryberri::FileManager::setToNextFileType() {
         closedir(currentDirectory);
     }
 
-    currentlySelectedFileType++;
     bool notOverflowed = true;
-    if (currentlySelectedFileType >= fileTypes.size()) {
-        notOverflowed = false;
-        currentlySelectedFileType = 0;
-    }
+    if (reset) {
+        currentlySelectedFileType = -1;
+    } else {
+        currentlySelectedFileType++;
 
-    currentFileType = fileTypes[currentlySelectedFileType];
-    std::string inputDirectory = inputDirectories[currentFileType];
-    currentInputDirectoryPath = inputDirectory;
-    currentDirectory = opendir(inputDirectory.c_str());
+        if (currentlySelectedFileType >= fileTypes.size()) {
+            notOverflowed = false;
+            currentlySelectedFileType = 0;
+        }
+        currentFileType = fileTypes[currentlySelectedFileType];
+        std::string inputDirectory = inputDirectories[currentFileType];
+        currentInputDirectoryPath = inputDirectory;
+        currentDirectory = opendir(inputDirectory.c_str());
+    }
 
     return notOverflowed;
 }

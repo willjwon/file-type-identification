@@ -3,5 +3,5 @@ project(FileFragmentGenerator)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(SOURCE_FILES main.cpp json.hpp FileManager.cpp FileManager.hpp FragmentManager.cpp FragmentManager.hpp)
+set(SOURCE_FILES main.cpp json.hpp FileManager.cpp FileManager.hpp FragmentManager.cpp FragmentManager.hpp Random.hpp)
 add_executable(FileFragmentGenerator ${SOURCE_FILES})

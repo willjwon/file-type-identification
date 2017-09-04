@@ -125,8 +125,6 @@ void baryberri::FragmentManager::saveGramDataIntoCSV(int* const & gramArray) {
     }
 }
 
-
-
 void baryberri::FragmentManager::setToNextOffset() {
     // offset has `(numerator / denominator) * fragmentSize` format.
     static int numerator = 1;
