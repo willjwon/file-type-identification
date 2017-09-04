@@ -17,7 +17,9 @@
         "xlsx": 4
     },
 
-    "outputCSV": "../frequency.csv",
+    "outputPath": "../frequency/frequency_",
+
+    "fragmentsPerCSV": 100,
 
     "settings": {
         "gram": 1,
