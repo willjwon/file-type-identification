@@ -28,6 +28,14 @@ void baryberri::FileManager::setToFileType(std::string fileType) {
     currentDirectory = opendir(inputDirectory.c_str());
 }
 
+void baryberri::FileManager::setToFilePath(std::string directoryPath) {
+    if (currentDirectory != nullptr) {
+        closedir(currentDirectory);
+    }
+    
+    currentDirectory = opendir(directoryPath.c_str());
+}
+
 const std::string baryberri::FileManager::getCurrentFileType() {
     return currentFileType;
 }

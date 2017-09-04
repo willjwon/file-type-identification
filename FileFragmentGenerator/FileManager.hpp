@@ -26,6 +26,12 @@ public:
     /// \param fileType fileType to set
     void setToFileType(std::string fileType);
 
+
+    /// set a FileManager to a specific given directory path.
+    ///
+    /// \param directoryPath directory's path to set
+    void setToFilePath(std::string directoryPath);
+
     /// get currentFileType.
     ///
     /// \return currentFileType
