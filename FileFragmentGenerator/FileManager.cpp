@@ -3,10 +3,12 @@
 #include <vector>
 #include "FileManager.hpp"
 
-baryberri::FileManager::FileManager(json *settings) {
+int baryberri::FileManager::numOfFileTypes = 0;
+
+baryberri::FileManager::FileManager(json* settings) {
     this->settings = settings;
     std::vector<std::string> fileTypes = (*settings)["fileType"];
-    FileManager::numOfFileTypes = (int)fileTypes.size();
+    numOfFileTypes = (int)fileTypes.size();
 }
 
 baryberri::FileManager::~FileManager() {
@@ -19,7 +21,7 @@ const std::string baryberri::FileManager::getCurrentFileType() {
     return currentFileType;
 }
 
-static const int baryberri::FileManager::getNumOfFileTypes() {
+const int baryberri::FileManager::getNumOfFileTypes() {
     return numOfFileTypes;
 }
 
