@@ -21,6 +21,11 @@ public:
     /// close the directory before FileManager destructs.
     ~FileManager();
 
+    /// set a FileManager to a specific given type.
+    ///
+    /// \param fileType fileType to set
+    void setToFileType(std::string fileType);
+
     /// get currentFileType.
     ///
     /// \return currentFileType

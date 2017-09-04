@@ -17,6 +17,17 @@ baryberri::FileManager::~FileManager() {
     }
 }
 
+void baryberri::FileManager::setToFileType(std::string fileType) {
+    std::string inputDirectory = (*settings)["inputDirectory"][fileType];
+
+    if (currentDirectory != nullptr) {
+        closedir(currentDirectory);
+    }
+
+    currentInputDirectoryPath = inputDirectory;
+    currentDirectory = opendir(inputDirectory.c_str());
+}
+
 const std::string baryberri::FileManager::getCurrentFileType() {
     return currentFileType;
 }
