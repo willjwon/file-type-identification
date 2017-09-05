@@ -1,5 +1,5 @@
 {
-    "numOfFileTypes": 5,
+    "fileTypes": ["html", "hwp", "pdf", "docx", "xlsx"], 
 
     "inputDirectory": {
         "html": "./html",
