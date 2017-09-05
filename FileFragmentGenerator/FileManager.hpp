@@ -76,11 +76,11 @@ private:
     /// indicates the current directory.
     DIR* currentDirectory;
 
-    /// current input file stream.
-    std::ifstream inputFileStream;
-
     /// the starting offset where the fragmentation starts.
-    int offset;
+    int baseOffset;
+
+    /// current file's offset
+    int currentFileOffset;
 
     /// used gram's size when byte frequency is counted.
     /// set to 0 when raw data is needed.
@@ -91,6 +91,9 @@ private:
 
     /// number of fragments per each csv.
     int numOfFragmentsPerCSV;
+
+    /// input file's path
+    std::string inputFilePath;
 
     /// indicates the current file.
     struct dirent* currentFile;
@@ -107,8 +110,10 @@ private:
     /// save current output stream's number.
     static int currentOutputFileNumber;
 
+    /// current input file stream.
+    static std::ifstream inputFileStream;
+
     /// current output file stream.
-    /// as every FileManager outputs the fragment into the same file, it's static member.
     static std::ofstream outputFileStream;
 
     /// reset the currentFile and restart iterating current directory.
@@ -142,6 +147,9 @@ private:
 
     /// set offset to next available offset.
     void setToNextOffset();
+
+    /// open an input stream to read.
+    void reloadInputStream();
 
     /// checks whether given str has a given suffix.
     /// \param str string to test whether it has given suffix or not
