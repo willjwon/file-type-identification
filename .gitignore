@@ -19,4 +19,8 @@ CMakeCache.txt
 
 # Makefile
 Makefile
-FileFragmentGenerator/FileFragmentGenerator
+
+# FileFragmentGenerator Input and Output
+FileFragmentGenerator/input/
+FileFragmentGenerator/output/
+
