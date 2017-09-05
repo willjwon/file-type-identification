@@ -3,28 +3,37 @@
 #include <vector>
 #include "FileManager.hpp"
 
-using json = nlohmann::json;
 
+json* baryberri::FileManager::settings = nullptr;
 int baryberri::FileManager::numOfFileTypes = 0;
-bool baryberri::FileManager::numOfFileTypesHasSet = false;
-static json* settings = nullptr;
+std::string baryberri::FileManager::outputBasePath = "";
+int baryberri::FileManager::currentOutputFileNumber = 0;
+std::ofstream baryberri::FileManager::outputFileStream;
 
 baryberri::FileManager::FileManager() {
-    if (!numOfFileTypesHasSet) {
-        numOfFileTypesHasSet = true;
-        std::vector<std::string> fileTypes = (*settings)["fileType"];
-        numOfFileTypes = (int)fileTypes.size();
-    }
+    currentFileTypeIndex = -1;
+    currentDirectory = nullptr;
+    offset = 0;
+    gramSize = (*settings)["settings"]["gramSize"];
+    fragmentSize = (*settings)["settings"]["fragmentSize"];
+    numOfFragmentsPerCSV = (*settings)["fragmentsPerCSV"];
+    currentFile = nullptr;
+    initializeFile();
 }
 
-baryberri::FileManager::~FileManager() {
-    if (currentDirectory != nullptr) {
-        closedir(currentDirectory);
-    }
-}
+baryberri::FileManager::FileManager(const std::string& fileType) {
+    std::vector<std::string> fileTypes = (*settings)["fileTypes"];
+    auto inputDirectories = (*settings)["inputDirectory"];
 
-void baryberri::FileManager::setSettings(json* settings) {
-    this->settings = settings;
+    currentFileType = fileType;
+    currentFileTypeIndex = (int) (std::find(fileTypes.begin(), fileTypes.end(), fileType) - fileTypes.begin());
+    currentInputDirectoryPath = inputDirectories[fileType];
+    currentDirectory = opendir(currentInputDirectoryPath.c_str());
+    offset = 0;
+    gramSize = (*settings)["settings"]["gramSize"];
+    fragmentSize = (*settings)["settings"]["fragmentSize"];
+    numOfFragmentsPerCSV = (*settings)["fragmentsPerCSV"];
+    initializeFile();
 }
 
 void baryberri::FileManager::setToFileType(std::string fileType) {
@@ -43,15 +52,13 @@ void baryberri::FileManager::setToFilePath(std::string directoryPath) {
         closedir(currentDirectory);
     }
 
-    currentDirectory = opendir(directoryPath.c_str());
-}
+    if (inputFileStream.is_open()) {
+        inputFileStream.close();
+    }
 
-const std::string baryberri::FileManager::getCurrentFileType() {
-    return currentFileType;
-}
-
-const int baryberri::FileManager::getNumOfFileTypes() {
-    return numOfFileTypes;
+    if (outputFileStream.is_open()) {
+        outputFileStream.close();
+    }
 }
 
 const json* baryberri::FileManager::getSettings() {
@@ -62,33 +69,94 @@ const bool baryberri::FileManager::isDirectoryExist() {
     return currentDirectory != nullptr;
 }
 
-const bool baryberri::FileManager::setToNextFileType(bool reset) {
-    static int currentlySelectedFileType = -1;
-
-    auto fileTypes = (*settings)["fileType"];
+const bool baryberri::FileManager::setToNextType() {
+    std::vector<std::string> fileTypes = (*settings)["fileTypes"];
     auto inputDirectories = (*settings)["inputDirectory"];
+
+    currentFileTypeIndex++;
+    if (currentFileTypeIndex >= numOfFileTypes) {
+        return false;
+    }
 
     if (currentDirectory != nullptr) {
         closedir(currentDirectory);
     }
 
-    bool notOverflowed = true;
-    if (reset) {
-        currentlySelectedFileType = -1;
-    } else {
-        currentlySelectedFileType++;
+    currentFileType = fileTypes[currentFileTypeIndex];
+    std::string inputDirectory = inputDirectories[currentFileType];
+    currentInputDirectoryPath = inputDirectory;
+    currentDirectory = opendir(inputDirectory.c_str());
 
-        if (currentlySelectedFileType >= fileTypes.size()) {
-            notOverflowed = false;
-            currentlySelectedFileType = 0;
-        }
-        currentFileType = fileTypes[currentlySelectedFileType];
-        std::string inputDirectory = inputDirectories[currentFileType];
-        currentInputDirectoryPath = inputDirectory;
-        currentDirectory = opendir(inputDirectory.c_str());
+    if (!isDirectoryExist()) {
+        setToNextType();
     }
 
-    return notOverflowed;
+    return true;
+}
+
+void baryberri::FileManager::makeFragment() {
+    static int numOfFragmentsGenerated = 0;
+    auto* fragmentArray = new char[fragmentSize];
+    getFragment(fragmentArray);
+
+    if (gramSize == 0) {
+        saveRawFragmentData(fragmentArray);
+    } else {
+        auto* gramArray = new int[int(pow(2, 8 * gramSize))];
+        computeNgram(fragmentArray, gramArray);
+        saveGramData(gramArray);
+    }
+
+    numOfFragmentsGenerated++;
+    if ((numOfFragmentsGenerated) % numOfFragmentsPerCSV == 0) {
+        changeToNextOutputFile();
+    }
+}
+
+void baryberri::FileManager::makeFragments(const int fragmentNumber) {
+    for (int i = 0; i < fragmentNumber; i++) {
+        makeFragment();
+    }
+}
+
+void baryberri::FileManager::setSettings(json* settings) {
+    FileManager::settings = settings;
+}
+
+void baryberri::FileManager::rewindFile() {
+    if (currentDirectory != nullptr) {
+        rewinddir(currentDirectory);
+    }
+}
+
+bool baryberri::FileManager::initializeFile() {
+    if (inputFileStream.is_open()) {
+        inputFileStream.close();
+    }
+
+    std::string nextFilePath = getNextFilePath();
+    if (nextFilePath.empty()) {
+        return false;
+    }
+
+    inputFileStream.open(nextFilePath);
+    changeToNextOutputFile();
+}
+
+void baryberri::FileManager::setToNextFile() {
+    if (inputFileStream.is_open()) {
+        inputFileStream.close();
+    }
+
+    std::string nextFilePath = getNextFilePath();
+    if (nextFilePath.empty()) {
+        rewindFile();
+        setToNextOffset();
+        nextFilePath = getNextFilePath();
+    }
+
+    inputFileStream.open(nextFilePath);
+    inputFileStream.seekg(offset);
 }
 
 const std::string baryberri::FileManager::getNextFilePath() {
@@ -111,13 +179,91 @@ const std::string baryberri::FileManager::getNextFilePath() {
     return path;
 }
 
-void baryberri::FileManager::rewindFile() {
-    if (currentDirectory != nullptr) {
-        rewinddir(currentDirectory);
+
+void baryberri::FileManager::getFragment(char* fragmentArray) {
+    inputFileStream.read(fragmentArray, fragmentSize);
+    if (inputFileStream.gcount() < fragmentSize) {
+        setToNextFile();
+        getFragment(fragmentArray);
+    }
+}
+
+void baryberri::FileManager::saveRawFragmentData(char* const& fragmentArray) {
+    for (int i = 0; i < fragmentSize; i++) {
+        outputFileStream << int((unsigned char)(fragmentArray[i])) << ",";
+    }
+    int fileTypeKey = (*settings)["typeKey"][currentFileType];
+    for (int i = 0; i < numOfFileTypes; i++) {
+        if (i == fileTypeKey) {
+            outputFileStream << 1;
+        } else {
+            outputFileStream << 0;
+        }
+        if (i != numOfFileTypes - 1) {
+            outputFileStream << ",";
+        } else {
+            outputFileStream << std::endl;
+        }
+    }
+}
+
+void baryberri::FileManager::computeNgram(char* const& fragmentArray, int* gramArray) {
+    int gramValue = 0;
+    int digit = 1;
+    for (int i = fragmentSize - 1; i >= gramSize - 1; i--) {
+        gramValue = 0;
+        digit = 1;
+        for (int j = 0; j < gramSize; j++) {
+            gramValue += digit * (unsigned int)fragmentArray[i - j];
+            digit *= 256;
+        }
+        gramArray[gramValue]++;
+    }
+}
+
+void baryberri::FileManager::saveGramData(int* const & gramArray) {
+    for (int i = 0; i < int(pow(2, 8 * gramSize)); i++) {
+        outputFileStream << gramArray[i] << ",";
+    }
+    int fileTypeKey = (*settings)["typeKey"][currentFileType];
+    for (int i = 0; i < numOfFileTypes; i++) {
+        if (i == fileTypeKey) {
+            outputFileStream << 1;
+        } else {
+            outputFileStream << 0;
+        }
+        if (i != numOfFileTypes - 1) {
+            outputFileStream << ",";
+        } else {
+            outputFileStream << std::endl;
+        }
+    }
+}
+
+void baryberri::FileManager::setToNextOffset() {
+    // offset has `(numerator / denominator) * fragmentSize` format.
+    static int numerator = 1;
+    static int denominator = 2;
+
+    offset = int(((double)numerator / (double)denominator) * fragmentSize);
+
+    numerator += 2;
+    if (numerator >= denominator) {
+        numerator = 1;
+        denominator *= 2;
     }
 }
 
 const bool baryberri::FileManager::has_suffix(const std::string& str, const std::string& suffix) {
     return str.size() >= suffix.size()
             && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
+void baryberri::FileManager::changeToNextOutputFile() {
+    if (outputFileStream.is_open()) {
+        outputFileStream.close();
+    }
+
+    std::string newOutputPath = outputBasePath + std::to_string(++currentOutputFileNumber);
+    outputFileStream.open(newOutputPath, std::fstream::app);
 }

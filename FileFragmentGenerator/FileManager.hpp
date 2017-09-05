@@ -20,7 +20,7 @@ public:
     /// create a new FileManager with set to given fileType.
     ///
     /// \param fileType fileType to set
-    explicit FileManager(std::string fileType);
+    explicit FileManager(const std::string& fileType);
 
     /// close the directory before FileManager destructs.
     ~FileManager();
@@ -64,6 +64,10 @@ private:
     /// currentFileType indicates currently selected file type.
     std::string currentFileType;
 
+    /// saves currently selected file type's index.
+    /// for example, "hwp" becomes index 1 in the example above.
+    int currentFileTypeIndex;
+
     /// current input directory path, like "./hwp/"
     std::string currentInputDirectoryPath;
 
@@ -71,7 +75,7 @@ private:
     DIR* currentDirectory;
 
     /// current input file stream.
-    std::ifstream currentFileStream;
+    std::ifstream inputFileStream;
 
     /// the starting offset where the fragmentation starts.
     int offset;
@@ -83,8 +87,8 @@ private:
     /// fragment's size
     int fragmentSize;
 
-    /// reset the currentFile and restart iterating current directory.
-    void rewindFile();
+    /// number of fragments per each csv.
+    int numOfFragmentsPerCSV;
 
     /// indicates the current file.
     struct dirent* currentFile;
@@ -96,14 +100,22 @@ private:
     static int numOfFileTypes;
 
     /// save current output stream's path.
-    static std::string currentOutputPath;
+    static std::string outputBasePath;
 
     /// save current output stream's number.
-    static int currentOutputPathNumber;
+    static int currentOutputFileNumber;
 
     /// current output file stream.
     /// as every FileManager outputs the fragment into the same file, it's static member.
     static std::ofstream outputFileStream;
+
+    /// reset the currentFile and restart iterating current directory.
+    void rewindFile();
+
+    /// Initialize currentFile.
+    ///
+    /// \return false if initialize fails.
+    bool initializeFile();
 
     /// set currentFileStream to next file.
     void setToNextFile();
