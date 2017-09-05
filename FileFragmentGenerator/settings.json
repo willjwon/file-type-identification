@@ -1,5 +1,5 @@
 {
-    "fileTypes": ["html", "hwp", "pdf", "docx", "xlsx"], 
+    "fileTypes": ["html", "hwp", "pdf", "docx", "xlsx"],
 
     "inputDirectory": {
         "html": "./html",
@@ -19,6 +19,7 @@
 
     "outputDirectory": "../frequency.csv",
     "outputFileName": "frequency_",
+    "fragmentsPerCSV": 100, 
 
     "settings": {
         "gram": 1,
