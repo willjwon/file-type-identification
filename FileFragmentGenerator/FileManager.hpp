@@ -2,6 +2,7 @@
 #define FILEFRAGMENTGENERATOR_FILEMANAGER_HPP
 
 #include <dirent.h>
+#include <fstream>
 #include "json.hpp"
 
 using json = nlohmann::json;
@@ -12,43 +13,17 @@ namespace baryberri {
 
 class baryberri::FileManager {
 public:
-    /// create a new FileManager with given json settings.
-    /// as it doesn't call setToNextFileType automatically, it should be called manually../
-    ///
-    /// \param settings json settings file to use
+    /// create a new FileManager.
+    /// as it doesn't call setToNextFileType automatically, it should be called manually.
     explicit FileManager();
+
+    /// create a new FileManager with set to given fileType.
+    ///
+    /// \param fileType fileType to set
+    explicit FileManager(std::string fileType);
 
     /// close the directory before FileManager destructs.
     ~FileManager();
-
-    /// set settings to a given json pointer.
-    /// \param settings pointer to json settings to set
-    void setSettings(json* settings);
-
-    /// set a FileManager to a specific given type.
-    ///
-    /// \param fileType fileType to set
-    void setToFileType(std::string fileType);
-
-    /// set a FileManager to a specific given directory path.
-    ///
-    /// \param directoryPath directory's path to set
-    void setToFilePath(std::string directoryPath);
-
-    /// get currentFileType.
-    ///
-    /// \return currentFileType
-    const std::string getCurrentFileType();
-
-    /// get numOfFileTypes;
-    ///
-    /// \return numOfFileTypes;
-    static const int getNumOfFileTypes();
-
-    /// get settings
-    ///
-    /// \return settings
-    static const json* getSettings();
 
     /// Returns is directory of given file type exists, and well-opened.
     ///
@@ -59,21 +34,32 @@ public:
     ///
     /// \param reset true if it's wanted to reset currently selected file type.
     /// \return false if there's no next file type available, else returns true.
-    const bool setToNextFileType(bool reset);
+    const bool setToNextType();
 
-    /// gets an available file's path inside currentTypesInputDirectoryPath.
-    /// the file is checked whether it has same corresponding extension with currentFileType.
+    /// make one fragment, and save it into .csv file.
+    void makeFragment();
+
+    /// make the given number of fragments, and save it into .csv file.
     ///
-    /// \return a file's path, if available. If there's no file available, returns empty string.
-    const std::string getNextFilePath();
+    /// \param fragmentNumber wanted number of fragments to generate
+    void makeFragments(const int fragmentNumber);
 
-    /// reset the currentFile and restart iterating current directory.
-    void rewindFile();
+    /// set settings with given json file.
+    ///
+    /// \param settings json settings to set
+    static void setSettings(json* settings);
+
+//    /// get currentFileType.
+//    ///
+//    /// \return currentFileType
+//    const std::string getCurrentFileType();
+//
+//    /// get numOfFileTypes;
+//    ///
+//    /// \return numOfFileTypes;
+//    static const int getNumOfFileTypes();
 
 private:
-    /// json settings file that's loaded.
-    static json* settings;
-
     /// settings has "fileType": ["html", "hwp", "pdf", "docx", "xlsx"] field.
     /// currentFileType indicates currently selected file type.
     std::string currentFileType;
@@ -84,20 +70,73 @@ private:
     /// indicates the current directory.
     DIR* currentDirectory;
 
+    /// current input file stream.
+    std::ifstream currentFileStream;
+
+    /// the starting offset where the fragmentation starts.
+    int offset;
+
+    /// used gram's size when byte frequency is counted.
+    /// set to 0 when raw data is needed.
+    int gramSize;
+
+    /// fragment's size
+    int fragmentSize;
+
+    /// reset the currentFile and restart iterating current directory.
+    void rewindFile();
+
     /// indicates the current file.
     struct dirent* currentFile;
+
+    /// save settings.json
+    static json* settings;
 
     /// get how many file types exist.
     static int numOfFileTypes;
 
-    /// true if numOfFileTypes is set.
-    static bool numOfFileTypesHasSet;
+    /// save current output stream's path.
+    static std::string currentOutputPath;
+
+    /// save current output stream's number.
+    static int currentOutputPathNumber;
+
+    /// current output file stream.
+    /// as every FileManager outputs the fragment into the same file, it's static member.
+    static std::ofstream outputFileStream;
+
+    /// set currentFileStream to next file.
+    void setToNextFile();
+
+    /// gets an available file's path inside currentTypesInputDirectoryPath.
+    /// the file is checked whether it has same corresponding extension with currentFileType.
+    ///
+    /// \return a file's path, if available. If there's no file available, returns empty string.
+    const std::string getNextFilePath();
+
+    /// read a new fragment in currentFileStream, and save it into fragmentArray.
+    void getFragment(char* fragmentArray);
+
+    /// save raw data read by getFragment into csv file
+    void saveRawFragmentData(char* const& fragmentArray);
+
+    /// compute n-gram frequency data from fragmentArray, and save it into gramArray.
+    void computeNgram(char* const& fragmentArray, int* gramArray);
+
+    /// save n-gram data into csv file.
+    void saveGramData(int* const& gramArray);
+
+    /// set offset to next available offset.
+    void setToNextOffset();
 
     /// checks whether given str has a given suffix.
     /// \param str string to test whether it has given suffix or not
     /// \param suffix suffix string to test
     /// \return true if given str has given suffix, otherwise false.
     static const bool has_suffix(const std::string& str, const std::string& suffix);
+
+    /// change current output stream into next output stream.
+    static void changeToNextOutputFile();
 };
 
 #endif //FILEFRAGMENTGENERATOR_FILEMANAGER_HPP
