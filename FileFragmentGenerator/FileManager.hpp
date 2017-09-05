@@ -25,6 +25,8 @@ public:
     /// close the directory before FileManager destructs.
     ~FileManager();
 
+    const std::string& getCurrentFileType();
+
     /// Returns is directory of given file type exists, and well-opened.
     ///
     /// \return true if directory exists and opened, otherwise false.

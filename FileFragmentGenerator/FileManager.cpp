@@ -11,18 +11,29 @@ int baryberri::FileManager::currentOutputFileNumber = 0;
 std::ofstream baryberri::FileManager::outputFileStream;
 
 baryberri::FileManager::FileManager() {
+    std::vector<std::string> fileTypes = (*settings)["fileType"];
+
     currentFileTypeIndex = -1;
     currentDirectory = nullptr;
     offset = 0;
-    gramSize = (*settings)["settings"]["gramSize"];
+    gramSize = (*settings)["settings"]["gram"];
     fragmentSize = (*settings)["settings"]["fragmentSize"];
-    numOfFragmentsPerCSV = (*settings)["fragmentsPerCSV"];
+    numOfFragmentsPerCSV = (*settings)["settings"]["fragmentsPerCSV"];
     currentFile = nullptr;
+    numOfFileTypes = (int)(fileTypes.size());
+
+    std::string outputDirectory = (*settings)["outputDirectory"];
+    if (!has_suffix(outputDirectory, "/")) {
+        outputDirectory += "/";
+    }
+    std::string outputBaseFileName = (*settings)["outputFileName"];
+    outputBasePath = outputDirectory + outputBaseFileName;
+
     initializeFile();
 }
 
 baryberri::FileManager::FileManager(const std::string& fileType) {
-    std::vector<std::string> fileTypes = (*settings)["fileTypes"];
+    std::vector<std::string> fileTypes = (*settings)["fileType"];
     auto inputDirectories = (*settings)["inputDirectory"];
 
     currentFileType = fileType;
@@ -30,9 +41,18 @@ baryberri::FileManager::FileManager(const std::string& fileType) {
     currentInputDirectoryPath = inputDirectories[fileType];
     currentDirectory = opendir(currentInputDirectoryPath.c_str());
     offset = 0;
-    gramSize = (*settings)["settings"]["gramSize"];
+    gramSize = (*settings)["settings"]["gram"];
     fragmentSize = (*settings)["settings"]["fragmentSize"];
-    numOfFragmentsPerCSV = (*settings)["fragmentsPerCSV"];
+    numOfFragmentsPerCSV = (*settings)["settings"]["fragmentsPerCSV"];
+    numOfFileTypes = (int)(fileTypes.size());
+
+    std::string outputDirectory = (*settings)["outputDirectory"];
+    if (!has_suffix(outputDirectory, "/")) {
+        outputDirectory += "/";
+    }
+    std::string outputBaseFileName = (*settings)["outputFileName"];
+    outputBasePath = outputDirectory + outputBaseFileName;
+
     initializeFile();
 }
 
@@ -61,8 +81,9 @@ void baryberri::FileManager::setToFilePath(std::string directoryPath) {
     }
 }
 
-const json* baryberri::FileManager::getSettings() {
-    return settings;
+const std::string& baryberri::FileManager::getCurrentFileType() {
+    return currentFileType;
+
 }
 
 const bool baryberri::FileManager::isDirectoryExist() {
@@ -70,7 +91,7 @@ const bool baryberri::FileManager::isDirectoryExist() {
 }
 
 const bool baryberri::FileManager::setToNextType() {
-    std::vector<std::string> fileTypes = (*settings)["fileTypes"];
+    std::vector<std::string> fileTypes = (*settings)["fileType"];
     auto inputDirectories = (*settings)["inputDirectory"];
 
     currentFileTypeIndex++;
@@ -83,13 +104,14 @@ const bool baryberri::FileManager::setToNextType() {
     }
 
     currentFileType = fileTypes[currentFileTypeIndex];
-    std::string inputDirectory = inputDirectories[currentFileType];
-    currentInputDirectoryPath = inputDirectory;
-    currentDirectory = opendir(inputDirectory.c_str());
+    currentInputDirectoryPath = inputDirectories[currentFileType];
+    currentDirectory = opendir(currentInputDirectoryPath.c_str());
 
     if (!isDirectoryExist()) {
         setToNextType();
     }
+
+    setToNextFile();
 
     return true;
 }
@@ -98,7 +120,6 @@ void baryberri::FileManager::makeFragment() {
     static int numOfFragmentsGenerated = 0;
     auto* fragmentArray = new char[fragmentSize];
     getFragment(fragmentArray);
-
     if (gramSize == 0) {
         saveRawFragmentData(fragmentArray);
     } else {
@@ -107,10 +128,10 @@ void baryberri::FileManager::makeFragment() {
         saveGramData(gramArray);
     }
 
-    numOfFragmentsGenerated++;
-    if ((numOfFragmentsGenerated) % numOfFragmentsPerCSV == 0) {
+    if ((++numOfFragmentsGenerated) % numOfFragmentsPerCSV == 0) {
         changeToNextOutputFile();
     }
+
 }
 
 void baryberri::FileManager::makeFragments(const int fragmentNumber) {
@@ -130,6 +151,10 @@ void baryberri::FileManager::rewindFile() {
 }
 
 bool baryberri::FileManager::initializeFile() {
+    if (!outputFileStream.is_open()) {
+        changeToNextOutputFile();
+    }
+
     if (inputFileStream.is_open()) {
         inputFileStream.close();
     }
@@ -140,7 +165,7 @@ bool baryberri::FileManager::initializeFile() {
     }
 
     inputFileStream.open(nextFilePath);
-    changeToNextOutputFile();
+    return true;
 }
 
 void baryberri::FileManager::setToNextFile() {
@@ -208,13 +233,15 @@ void baryberri::FileManager::saveRawFragmentData(char* const& fragmentArray) {
 }
 
 void baryberri::FileManager::computeNgram(char* const& fragmentArray, int* gramArray) {
-    int gramValue = 0;
-    int digit = 1;
+    for (int i = 0; i < int(pow(2, 8 * gramSize)); i++) {
+        gramArray[i] = 0;
+    }
+
     for (int i = fragmentSize - 1; i >= gramSize - 1; i--) {
-        gramValue = 0;
-        digit = 1;
+        int gramValue = 0;
+        int digit = 1;
         for (int j = 0; j < gramSize; j++) {
-            gramValue += digit * (unsigned int)fragmentArray[i - j];
+            gramValue += digit * (unsigned char)(fragmentArray[i - j]);
             digit *= 256;
         }
         gramArray[gramValue]++;
@@ -264,6 +291,6 @@ void baryberri::FileManager::changeToNextOutputFile() {
         outputFileStream.close();
     }
 
-    std::string newOutputPath = outputBasePath + std::to_string(++currentOutputFileNumber);
+    std::string newOutputPath = outputBasePath + std::to_string(++currentOutputFileNumber) + ".csv";
     outputFileStream.open(newOutputPath, std::fstream::app);
 }
