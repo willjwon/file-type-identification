@@ -1,7 +1,7 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <sys/stat.h>
-#include <ctime>
 #include "json.hpp"
 #include "FileManager.hpp"
 
@@ -27,11 +27,19 @@ int main() {
 
     // Make fragments and save into csv file
     int numOfFragments = settings["settings"]["totalFragmentsPerType"];
-    FileManager fileManager;
-    while (fileManager.setToNextType()) {
-        std::cout << "Generating fragments of type " << fileManager.getCurrentFileType() << " ..." << std::endl;
-        fileManager.makeFragments(numOfFragments);
+    std::vector<int> numOfFragmentsLeft;
+    std::vector<FileManager*> fileManagers;
+
+    FileManager defaultManager;
+    while (defaultManager.setToNextType()) {
+        std::cout << "Generating fragments of type " << defaultManager.getCurrentFileType() << " ..." << std::endl;
+        fileManagers.push_back(new FileManager(defaultManager.getCurrentFileType()));
+        numOfFragmentsLeft.push_back(numOfFragments);
+//        defaultManager.makeFragments(numOfFragments);
     }
+    std::cout << defaultManager.setToNextType() << std::endl;
+
+    std::cout << fileManagers.size() << " " << numOfFragmentsLeft.size() << std::endl;
 
     // close settings file
     settingsFile.close();
@@ -39,7 +47,7 @@ int main() {
     // print the running time.
     std::clock_t endTime = clock();
     std::cout << std::fixed << std::setprecision(2)
-              << "Total Running Time: " << (endTime - startTime) / CLOCKS_PER_SEC << "s" << std::endl;
+              << "Total Running Time: " << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << std::endl;
 
     return 0;
 }

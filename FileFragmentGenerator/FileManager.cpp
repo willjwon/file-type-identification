@@ -99,6 +99,7 @@ const bool baryberri::FileManager::setToNextType() {
 
     currentFileTypeIndex++;
     if (currentFileTypeIndex >= numOfFileTypes) {
+    if (currentFileTypeIndex >= numOfFileTypes) {
         return false;
     }
 
@@ -111,7 +112,9 @@ const bool baryberri::FileManager::setToNextType() {
     currentDirectory = opendir(currentInputDirectoryPath.c_str());
 
     if (!isDirectoryExist()) {
-        setToNextType();
+        if (!setToNextType()) {
+            return false;
+        };
     }
 
     setToNextFile();
