@@ -10,6 +10,7 @@ def filename_list_in_data_directory(path_dir: str):
     :return: filename's list in the data directory
     """
     filename_list = os.listdir(path_dir)
+    filename_list = list(filter(lambda x: x.endswith(".csv"), filename_list))
     return filename_list
 
 
@@ -63,7 +64,7 @@ class Test(unittest.TestCase):
             threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
             for step in range(10):
-                input_data = read_data()
+                input_data = read_data("train")
 
             coord.request_stop()
             coord.join(threads)
