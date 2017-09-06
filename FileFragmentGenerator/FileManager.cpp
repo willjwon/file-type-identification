@@ -99,7 +99,6 @@ const bool baryberri::FileManager::setToNextType() {
 
     currentFileTypeIndex++;
     if (currentFileTypeIndex >= numOfFileTypes) {
-    if (currentFileTypeIndex >= numOfFileTypes) {
         return false;
     }
 
@@ -294,7 +293,6 @@ void baryberri::FileManager::reloadInputStream() {
 
     inputFileStream.open(inputFilePath, std::fstream::app);
     inputFileStream.seekg(currentFileOffset);
-    std::cout << inputFilePath << std::endl;
 }
 
 const bool baryberri::FileManager::has_suffix(const std::string& str, const std::string& suffix) {
