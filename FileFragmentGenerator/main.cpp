@@ -47,7 +47,7 @@ int main() {
     // Make fragments and save.
     auto numOfValidTypes = (int)(numOfFragmentsLeft.size());
     int randomIndex = 0;
-    std::cout << "Generating file fragments...";
+    std::cout << "Generating file fragments..." << std::endl;
     while (checkFragmentsLeft(numOfFragmentsLeft)) {
         do {
             randomIndex = getRandom(0, numOfValidTypes);
@@ -61,6 +61,7 @@ int main() {
 
     // print the running time.
     std::clock_t endTime = clock();
+    std::cout << "Fragment generation is done." << std::endl;
     std::cout << std::fixed << std::setprecision(2)
               << "Total Running Time: " << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << std::endl;
 
