@@ -9,6 +9,7 @@
 
 # Python
 __pycache__/
+__init__.py
 
 # CLion and CMake
 cmake-build-debug/
@@ -18,4 +19,3 @@ cmake_install.cmake
 
 # Makefile
 Makefile
-ByteFrequencyBasedTraining/read_data.py
