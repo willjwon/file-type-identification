@@ -11,12 +11,9 @@ def get_filename_list(path_dir: str):
     """
     filename_list = os.listdir(path_dir)
     filename_list = list(filter(lambda x: x.endswith(".csv"), filename_list))
-
-    filename_with_path_list = []
-    for filename in filename_list:
-        filename_with_path_list.append(path_dir + "/" + filename)
-
-    return filename_with_path_list
+    if not path_dir.endswith("/"):
+        path_dir += "/"
+    return list(map(lambda x: path_dir + x, filename_list))
 
 
 def read_data(data_type: str):
