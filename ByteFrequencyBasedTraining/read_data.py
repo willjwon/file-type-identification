@@ -29,10 +29,10 @@ def read_a_csv(data_type: str):
             files_list = files_in_directory(FLAGS.train_data_path)
             files_queue = tf.train.string_input_producer(files_list, shuffle=True)
         elif data_type.lower() == "validation":
-            files_list = files_in_directory(FLAGS.train_data_path)
+            files_list = files_in_directory(FLAGS.validation_data_path)
             files_queue = tf.train.string_input_producer(files_list, shuffle=False)
         elif data_type.lower() == "test":
-            files_list = files_in_directory(FLAGS.train_data_path)
+            files_list = files_in_directory(FLAGS.test_data_path)
             files_queue = tf.train.string_input_producer(files_list, shuffle=False)
         else:
             raise AttributeError("only train, validation or test data is available.")
@@ -50,13 +50,14 @@ def read_a_csv(data_type: str):
         exit()
 
 
-def next_train_batch(batch_size: int):
+def get_batch(data_type: str, batch_size: int):
     """
-    read a data file, and returns batch data.
-    :param batch_size: bach size to get
-    :return: batch value and file type encoded by one-hot encoding
+    get batch for a given type, read from csv files.
+    :param data_type: "train", "validation" or "test"
+    :param batch_size: batch size to get
+    :return: batcn tensor read from csv
     """
-    input_data = read_a_csv("train")
+    input_data = read_a_csv(data_type)
     frequency_value = input_data[:256]
     file_type_in_one_hot = input_data[256:]
 
@@ -66,12 +67,37 @@ def next_train_batch(batch_size: int):
     return batch_frequency_value, batch_file_type_in_one_hot
 
 
+def next_train_batch(batch_size: int):
+    """
+    read a data file, and returns batch data.
+    :param batch_size: bach size to get
+    :return: batch value and file type encoded by one-hot encoding
+    """
+    return get_batch("train", batch_size)
+
+
+def next_validation_data():
+    """
+    get validation data of one csv file.
+    :return: validation data
+    """
+    return get_batch("validation", FLAGS.fragments_per_csv)
+
+
+def next_test_data():
+    """
+    get test data of one csv file.
+    :return: test data
+    """
+    return get_batch("test", FLAGS.fragments_per_csv)
+
+
 class Test(unittest.TestCase):
     def setUp(self):
         pass
 
     def test_batch(self):
-        batch_byte_value, batch_file_type = next_train_batch(1)
+        batch_byte_value, batch_file_type = next_validation_data()
 
         sess = tf.Session()
 

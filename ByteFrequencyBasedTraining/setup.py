@@ -36,7 +36,7 @@ FLAGS.batch_size = 10
 FLAGS.num_of_total_fragments = 500
 
 # csv information
-FLAGS.fragments_per_csv = 100
+FLAGS.fragments_per_csv = 3
 
 # keep probability for dropout while training
 keep_prob_train = 0.7
