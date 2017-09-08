@@ -1,5 +1,4 @@
-import tensorflow as tf
-from ByteFrequencyBasedTraining.setup import *
+from setup import *
 
 # input placeholders
 # x: byte value (0 ~ 255)

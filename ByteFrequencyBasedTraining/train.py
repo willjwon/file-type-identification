@@ -1,12 +1,12 @@
-import tensorflow as tf
+from setup import *
+from read_data import *
+from neural_net import *
 
-from ByteFrequencyBasedTraining.setup import *
-from ByteFrequencyBasedTraining.read_data import *
-from ByteFrequencyBasedTraining.neural_net import *
 
 def main():
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
         logits=hypothesis, labels=Y))
+
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
     tf.summary.scalar(name="cost", tensor=cost)
 
@@ -55,6 +55,7 @@ def main():
 
         coord.request_stop()
         coord.join(threads)
+
 
 if __name__ == "__main__":
     main()

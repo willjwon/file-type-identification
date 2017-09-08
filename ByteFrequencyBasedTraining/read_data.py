@@ -2,7 +2,6 @@ import os
 import tensorflow as tf
 import unittest
 
-
 def get_filename_list(path_dir: str):
     """
     read a directory and returns a list of included file paths.
@@ -26,6 +25,8 @@ def read_data(data_type: str):
         # Filename queue
         if data_type.lower() == "train":
             filename_list = get_filename_list("./train_data")
+        elif data_type.lower() == "validation":
+            filename_list = get_filename_list("./validation_data")
         elif data_type.lower() == "test":
             filename_list = get_filename_list("./test_data")
         else:
