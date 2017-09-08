@@ -76,35 +76,49 @@ def next_train_batch(batch_size: int):
     return get_batch("train", batch_size)
 
 
-def next_validation_data():
+def validation_data_set():
     """
-    get validation data of one csv file.
-    :return: validation data
+    iterate on validation data.
+    :return: termination of iteration
     """
-    return get_batch("validation", FLAGS.fragments_per_csv)
+    for _ in range(len(files_in_directory(FLAGS.validation_data_path))):
+        yield get_batch("validation", FLAGS.num_of_fragments_per_csv)
+    return
 
 
-def next_test_data():
+def test_data_set():
     """
-    get test data of one csv file.
-    :return: test data
+    iterate on test data.
+    :return: termination of iteration
     """
-    return get_batch("test", FLAGS.fragments_per_csv)
+    for _ in range(len(files_in_directory(FLAGS.test_data_path))):
+        yield get_batch("test", FLAGS.num_of_fragments_per_csv)
+    return
 
 
 class Test(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_batch(self):
-        batch_byte_value, batch_file_type = next_validation_data()
+    # def test_batch(self):
+    #     batch_byte_value, batch_file_type = validation_data_set()
+    #
+    #     sess = tf.Session()
+    #
+    #     # Start populating the filename queue.
+    #     coord = tf.train.Coordinator()
+    #     tf.train.start_queue_runners(sess=sess, coord=coord)
+    #
+    #     x_batch, y_batch = sess.run([batch_byte_value, batch_file_type])
+    #     print(x_batch, y_batch)
 
+    def test_validation_data_set(self):
         sess = tf.Session()
 
         # Start populating the filename queue.
         coord = tf.train.Coordinator()
-
         tf.train.start_queue_runners(sess=sess, coord=coord)
 
-        x_batch, y_batch = sess.run([batch_byte_value, batch_file_type])
-        print(x_batch, y_batch)
+        for data in test_data_set():
+            print(data)
+
