@@ -40,7 +40,7 @@ def read_data(data_type: str):
         key, value = reader.read(filename_queue)
 
         # Decoder
-        record_defaults = [[0]] * 261
+        record_defaults = [[0.]] * 261
         input_data = tf.decode_csv(value, record_defaults=record_defaults)
         return input_data
     except:
