@@ -71,19 +71,6 @@ class Test(unittest.TestCase):
     def setUp(self):
         pass
 
-    # def test_read(self):
-    #
-    #     with tf.Session() as sess:
-    #         coord = tf.train.Coordinator()
-    #         threads = tf.train.start_queue_runners(sess=sess, coord=coord)
-    #
-    #         for step in range(1):
-    #             input_data = read_data("train")
-    #             print(input_data)
-    #
-    #         coord.request_stop()
-    #         coord.join(threads)
-
     def test_batch(self):
         batch_byte_value, batch_file_type = read_data_batch("train", 10)
 
