@@ -14,3 +14,6 @@ batch_per_epoch = int(data_size / batch_size)
 
 # keep probability for dropout while training
 keep_prob_train = 0.7
+
+# directory for tensorboard summary
+tensorboard_directory = './logs/train1'

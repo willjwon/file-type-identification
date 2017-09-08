@@ -69,12 +69,12 @@ class Test(unittest.TestCase):
         pass
 
     def test_batch(self):
-        batch_byte_value, batch_file_type = read_data_batch("train", 10)
+        batch_byte_value, batch_file_type = read_data_batch("train", 2000)
 
         sess = tf.Session()
         # Start populating the filename queue.
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(sess=sess, coord=coord)
-        for i in range(10):
-            x_batch, y_batch = sess.run([batch_byte_value, batch_file_type])
-            print(x_batch, y_batch)
+        # for i in range(10):
+        x_batch, y_batch = sess.run([batch_byte_value, batch_file_type])
+        print(x_batch, y_batch)
