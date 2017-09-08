@@ -3,7 +3,7 @@ import tensorflow as tf
 import unittest
 
 
-def filename_list_in_data_directory(path_dir: str):
+def get_filename_list(path_dir: str):
     """
     read a directory and returns a list of included file paths.
     :param path_dir: path's directory to read
@@ -11,25 +11,38 @@ def filename_list_in_data_directory(path_dir: str):
     """
     filename_list = os.listdir(path_dir)
     filename_list = list(filter(lambda x: x.endswith(".csv"), filename_list))
-    return filename_list
+
+    filename_with_path_list = []
+    for filename in filename_list:
+        filename_with_path_list.append(path_dir + "/" + filename)
+
+    return filename_with_path_list
 
 
 def read_data(data_type: str):
     """
     read the data folder and returns a single csv file.
-    :param data_type: "train" or "test"
+    :param data_type: "train" or "test.csv"
     :return: a csv file's parsed result
     """
     try:
+        # Filename queue
         if data_type.lower() == "train":
-            filename_list = filename_list_in_data_directory("./train_data")
-        elif data_type.lower() == "test":
-            filename_list = filename_list_in_data_directory("./test_data")
+            filename_list = get_filename_list("./train_data")
+        elif data_type.lower() == "test.csv":
+            filename_list = get_filename_list("./test_data")
         else:
-            raise ValueError("only train or test data is available.")
-        filename_queue = tf.train.string_input_producer(filename_list, shuffle=True)
+            raise ValueError("only train or test.csv data is available.")
+
+        filename_queue = tf.train.string_input_producer(
+            filename_list,
+            shuffle=True)
+
+        # Reader
         reader = tf.TextLineReader()
         key, value = reader.read(filename_queue)
+
+        # Decoder
         record_defaults = [[0]] * 261
         input_data = tf.decode_csv(value, record_defaults=record_defaults)
         return input_data
@@ -41,13 +54,13 @@ def read_data(data_type: str):
 def read_data_batch(data_type: str, batch_size: int):
     """
     read a data file, and returns batch data.
-    :param data_type: "train" or "test"
+    :param data_type: "train" or "test.csv"
     :param batch_size: bach size to get
     :return: batch value and file type encoded by one-hot encoding
     """
     input_data = read_data(data_type)
-    byte_value = input_data[:][0:256]
-    file_type = input_data[:][256:]
+    byte_value = input_data[0:256]
+    file_type = input_data[256:]
 
     batch_byte_value, batch_file_type = tf.train.batch([byte_value, file_type], batch_size=batch_size)
 
@@ -58,13 +71,26 @@ class Test(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_read(self):
-        with tf.Session() as sess:
-            coord = tf.train.Coordinator()
-            threads = tf.train.start_queue_runners(sess=sess, coord=coord)
+    # def test_read(self):
+    #
+    #     with tf.Session() as sess:
+    #         coord = tf.train.Coordinator()
+    #         threads = tf.train.start_queue_runners(sess=sess, coord=coord)
+    #
+    #         for step in range(1):
+    #             input_data = read_data("train")
+    #             print(input_data)
+    #
+    #         coord.request_stop()
+    #         coord.join(threads)
 
-            for step in range(10):
-                input_data = read_data("train")
+    def test_batch(self):
+        batch_byte_value, batch_file_type = read_data_batch("train", 10)
 
-            coord.request_stop()
-            coord.join(threads)
+        sess = tf.Session()
+        # Start populating the filename queue.
+        coord = tf.train.Coordinator()
+        threads = tf.train.start_queue_runners(sess=sess, coord=coord)
+        for i in range(10):
+            x_batch, y_batch = sess.run([batch_byte_value, batch_file_type])
+            print(x_batch, y_batch)
