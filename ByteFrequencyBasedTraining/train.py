@@ -1,5 +1,4 @@
 import tensorflow as tf
-import numpy as np
 
 from ByteFrequencyBasedTraining.setup import *
 from ByteFrequencyBasedTraining.read_data import *
@@ -9,6 +8,7 @@ def main():
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
         logits=hypothesis, labels=Y))
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
@@ -22,8 +22,9 @@ def main():
             avg_cost = 0
 
             for batch in range(batch_per_epoch):
-                batch_x, batch_y = read_data_batch("train", batch_size)
-                feed_dict = {X: batch_x, Y: batch_y}
+                batch_byte_value, batch_file_type = read_data_batch("train", batch_size)
+                print(batch_byte_value)
+                feed_dict = {X: batch_byte_value, Y: batch_file_type, keep_prob: keep_prob_train}
                 c, _ = sess.run([cost, optimizer], feed_dict=feed_dict)
                 avg_cost += c / batch_per_epoch
 
@@ -31,9 +32,9 @@ def main():
 
         print("Learning Completed")
 
-        # test the model
+        # test.csv the model
         # TODO: modify read_data_batch for testing (batch_size)
-        test_x, test_y = read_data_batch("test", 1000)
+        test_x, test_y = read_data_batch("test.csv", 1000)
 
         correct_prediction = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(Y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
