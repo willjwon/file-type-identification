@@ -4,8 +4,8 @@ from ByteFrequencyBasedTraining.setup import *
 # input placeholders
 # x: byte value (0 ~ 255)
 # y: 5 file types in one hot encoding
-X = tf.placeholder(tf.int32, [None, 256])
-Y = tf.placeholder(tf.int32, [None, 5])
+X = tf.placeholder(tf.float32, [None, 256])
+Y = tf.placeholder(tf.float32, [None, 5])
 
 # keep probability placeholder for dropout
 keep_prob = tf.placeholder(tf.float32)
