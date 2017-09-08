@@ -10,7 +10,7 @@ def main():
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
     tf.summary.scalar(name="cost", tensor=cost)
 
-    train_batch_byte_value, train_batch_file_type = read_data_batch("train", batch_size)
+    train_batch_byte_value, train_batch_file_type = next_train_batch("train", batch_size)
 
     # tensorboard summary
     summary = tf.summary.merge_all()
@@ -45,7 +45,7 @@ def main():
 
         # test.csv the model
         # TODO: modify read_data_batch for testing (batch_size)
-        test_x, test_y = read_data_batch("test.csv", 1000)
+        test_x, test_y = next_train_batch("test.csv", 1000)
 
         correct_prediction = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(Y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
