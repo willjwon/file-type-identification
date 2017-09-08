@@ -15,11 +15,16 @@ FLAGS = tf.app.flags.FLAGS
 # DEFINE CONSTANTS HERE!
 # =================================
 
-# learning rate
-FLAGS.learning_rate = 0.001
+# input directory
+FLAGS.train_data_path = "./train_data"
+FLAGS.validation_data_path = "./validation_data"
+FLAGS.test_data_path = "./test_data"
 
-# the ratio of training data out of total data
-FLAGS.training_data_ratio = 0.7
+# learning rate
+FLAGS.learning_rate = 1e-4
+
+# keep probability for dropout while training
+keep_prob_train = 0.7
 
 # number of epochs to repeat training
 FLAGS.num_of_epochs = 15
@@ -28,10 +33,10 @@ FLAGS.num_of_epochs = 15
 FLAGS.batch_size = 10
 
 # total data size
-FLAGS.data_size = 5000
+FLAGS.num_of_total_fragments = 500
 
-# number of mini batches per one epoch
-FLAGS.batch_per_epoch = int(FLAGS.data_size / FLAGS.batch_size)
+# csv information
+FLAGS.fragments_per_csv = 100
 
 # keep probability for dropout while training
 keep_prob_train = 0.7
