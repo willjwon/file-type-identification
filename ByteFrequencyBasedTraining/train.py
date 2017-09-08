@@ -9,6 +9,7 @@ def main():
         logits=hypothesis, labels=Y))
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
+    train_batch_byte_value, train_batch_file_type = read_data_batch("train", batch_size)
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
@@ -22,9 +23,8 @@ def main():
             avg_cost = 0
 
             for batch in range(batch_per_epoch):
-                batch_byte_value, batch_file_type = read_data_batch("train", batch_size)
-                print(batch_byte_value)
-                feed_dict = {X: batch_byte_value, Y: batch_file_type, keep_prob: keep_prob_train}
+                batch_byte_value, batch_file_type = sess.run([train_batch_byte_value, train_batch_file_type])
+                feed_dict = {X: batch_byte_value, Y: batch_file_type, keep_prob: 0.7}
                 c, _ = sess.run([cost, optimizer], feed_dict=feed_dict)
                 avg_cost += c / batch_per_epoch
 

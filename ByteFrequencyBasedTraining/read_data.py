@@ -26,7 +26,7 @@ def read_data(data_type: str):
         # Filename queue
         if data_type.lower() == "train":
             filename_list = get_filename_list("./train_data")
-        elif data_type.lower() == "test.csv":
+        elif data_type.lower() == "test":
             filename_list = get_filename_list("./test_data")
         else:
             raise ValueError("only train or test.csv data is available.")
