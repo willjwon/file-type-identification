@@ -19,3 +19,8 @@ cmake_install.cmake
 
 # Makefile
 Makefile
+
+# TensorFlow Input files
+ByteFrequencyBasedTraining/train_data/
+ByteFrequencyBasedTraining/validation_data/
+ByteFrequencyBasedTraining/test_data/
