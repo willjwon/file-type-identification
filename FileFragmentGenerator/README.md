@@ -9,11 +9,11 @@
     "fileType": ["html", "hwp", "pdf", "docx", "xlsx"],
 
     "inputDirectory": {
-        "html": "./html",
-        "hwp": "./hwp",
-        "pdf": "./pdf",
-        "docx": "./docx",
-        "xlsx": "./xlsx"
+        "html": "./input/html",
+        "hwp": "./input/hwp",
+        "pdf": "./input/pdf",
+        "docx": "./input/docx",
+        "xlsx": "./input/xlsx"
     },
 
     "typeKey": {
@@ -24,27 +24,32 @@
         "xlsx": 4
     },
 
-    "outputCSV": "../frequency.csv",
+    "outputDirectory": "./output",
+    "outputFileName": "frequency_",
 
     "settings": {
         "gram": 1,
         "fragmentSize": 4096,
-        "numOfFragments": 50000
+        "totalFragmentsPerType": 200000,
+        "fragmentsPerCSV": 1000
     }
 }
+
 ```
 
 - 각 field에 대한 설명은 아래와 같습니다.
     * `fileType`: 조각으로 나누어야 할 파일들의 type을 기록합니다.
     *  `inputDirectory`: `fileType`에 지정된 type들의 파일들이 어떤 폴더에 위치하고 있는지를 기록합니다.
 	`./`는 `settings.json` 파일이 위치한 폴더를 의미합니다.
-    * `typeKey`: 각 `fileType` 마다 일정한 key가 csv의 row의 맨 마지막에 기록됩니다. 각 type이 가져야 하는 key를 지정합니다.
-    * `outputCSV`: 결과 csv가 기록될 위치를 지정합니다. `../`는 상위 폴더를 의미합니다. 존재하지 않는 csv 파일은 만들어주지만, 존재하지 않는 폴더는 자동으로 만들어주지 않으니, 꼭 존재하는 폴더로 설정해야 합니다.
+    * `typeKey`: 각 `fileType`은 one-hot encoding을 통해 구분됩니다. 각 type의 몇 번째 bit가 1이 될 것인지 설정하시면 됩니다. **0부터 시작해서 순차적으로** 설정해주세요.
+    * `outputDirectory`: 결과 csv가 기록될 위치를 지정합니다. 존재하지 않는 csv 파일 및 한 층의 폴더는 만들어주지만, 2개 이상의 폴더는 자동으로 만들어주지 않으니 주의해주시기 바랍니다. 또한, 프로그램을 재실행하면 덮어쓰기 모드로 실행되니, 폴더 내에 csv가 없도록 주의해주세요.
+    * `outputFileName`: csv가 가질 fileName을 지정합니다. fileName 뒤에 연속적인 숫자가 자동으로 붙어 csv가 만들어집니다. 예를 들어, 이 field가 `frequency_`로 설정된 경우 `frequency_1.csv`의 csv 파일이 출력됩니다.
     * `settings`: 다음의 세 가지 설정을 지정합니다.
 		* `gram`: 어떤 n-gram을 사용할 것인지를 지정합니다.
         만약 0으로 설정된 경우, frequency를 계산하지 않고, fragment 자체를 csv에 기록합니다.
 		* `fragmentSize`: 파일 조각의 크기를 byte 단위로 기록합니다.
-		* `numOfFragments`: 각 파일 type별로 만들고자 하는 fragment의 갯수를 지정합니다.
+		* `totalFragmentsPerType`: 각 타입당 만들고 싶은 fragment의 갯수를 입력합니다. **총 fragment의 수가 아니라는** 것에 주의해주세요.
+		* `fragmentsPerCSV`: 한 csv당 저장할 fragment의 수를 기록합니다.
 
 2. 프로젝트를 빌드하고 실행합니다. 한 번 빌드한 후에 `settings.json` 파일만 수정했다면, 새로 build할 필요 없이 4번과 같이 실행만 하면 됩니다.
 - CMake는 Unix의 Makefile을 자동으로 만들어주는 프로그램입니다. 이렇게 만들어진 Makefile을 사용하여, make 명령어를 통해 프로젝트를 컴파일할 수 있습니다.

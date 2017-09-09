@@ -12,9 +12,17 @@ __pycache__/
 
 # CLion and CMake
 cmake-build-debug/
-CMakeLists.txt
 cmake_install.cmake
+CMakeFiles/
+CMakeCache.txt
 *.make
 
 # Makefile
 Makefile
+
+# FileFragmentGenerator Input and Output
+FileFragmentGenerator/FileFragmentGenerator
+FileFragmentGenerator/FileFragmentGenerator.cbp
+FileFragmentGenerator/input/
+FileFragmentGenerator/output/
+

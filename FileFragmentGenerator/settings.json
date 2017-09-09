@@ -2,11 +2,11 @@
     "fileType": ["html", "hwp", "pdf", "docx", "xlsx"],
 
     "inputDirectory": {
-        "html": "./html",
-        "hwp": "./hwp",
-        "pdf": "./pdf",
-        "docx": "./docx",
-        "xlsx": "./xlsx"
+        "html": "./input/html",
+        "hwp": "./input/hwp",
+        "pdf": "./input/pdf",
+        "docx": "./input/docx",
+        "xlsx": "./input/xlsx"
     },
 
     "typeKey": {
@@ -17,11 +17,13 @@
         "xlsx": 4
     },
 
-    "outputCSV": "../frequency.csv",
+    "outputDirectory": "./output",
+    "outputFileName": "frequency_",
 
     "settings": {
         "gram": 1,
         "fragmentSize": 4096,
-        "numOfFragments": 100000
+        "totalFragmentsPerType": 100,
+        "fragmentsPerCSV": 10
     }
 }
