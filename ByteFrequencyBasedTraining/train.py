@@ -4,9 +4,9 @@ from neural_net import *
 
 def main():
     train_queue, validation_queue, test_queue = make_files_queue()
-    train_batch_byte_value, train_batch_file_type = next_train_batch(batch_size, train_queue)
-    validation_batch_byte_value, validation_batch_file_type = validation_data_set(validation_queue)
-    test_batch_byte_value, test_batch_file_type = test_data_set(test_queue)
+    train_batch_byte_value, train_batch_file_type = next_train_batch(FLAGS.batch_size, train_queue)
+    validation_batch_byte_value, validation_batch_file_type = get_data_set(validation_queue)
+    test_batch_byte_value, test_batch_file_type = get_data_set(test_queue)
 
     global_step = tf.Variable(0, trainable=False, name="global_step")
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis, labels=Y))
@@ -18,7 +18,7 @@ def main():
 
     # tensorboard summary
     summary = tf.summary.merge_all()
-    writer = tf.summary.FileWriter(tensorboard_directory)
+    writer = tf.summary.FileWriter(FLAGS.tensorboard_directory)
 
     with tf.Session() as sess:
         writer.add_graph(sess.graph)

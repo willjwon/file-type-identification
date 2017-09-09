@@ -85,24 +85,18 @@ def next_train_batch(batch_size: int, train_queue):
     return get_batch(batch_size, train_queue)
 
 
-def validation_data_set(validation_queue):
+def get_data_set(validation_queue):
     """
-    iterate on validation data.
+    return concatenated validatoin
     :return: termination of iteration
     """
-    for _ in range(len(files_in_directory(FLAGS.validation_data_path))):
-        yield get_batch(FLAGS.num_of_fragments_per_csv, validation_queue)
-    return
+    result_frequency_value, result_file_type = get_batch(FLAGS.num_of_fragments_per_csv, validation_queue)
+    for _ in range(len(files_in_directory(FLAGS.validation_data_path)) - 1):
+        frequency_value, file_type = get_batch(FLAGS.num_of_fragments_per_csv, validation_queue)
+        result_frequency_value = tf.concat([result_frequency_value, frequency_value], 0)
+        result_file_type = tf.concat([result_file_type, file_type], 0)
 
-
-def test_data_set(test_queue):
-    """
-    iterate on test data.
-    :return: termination of iteration
-    """
-    for _ in range(len(files_in_directory(FLAGS.test_data_path))):
-        yield get_batch(FLAGS.num_of_fragments_per_csv, test_queue)
-    return
+    return result_frequency_value, result_file_type
 
 
 class Test(unittest.TestCase):
