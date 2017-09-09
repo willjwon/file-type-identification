@@ -17,47 +17,56 @@ def files_in_directory(directory_path: str):
     return list(map(lambda filename: directory_path + filename, filename_list))
 
 
-def read_a_csv(data_type: str):
+def make_files_queue():
+    """
+    make files queue
+    :return: train, validation, test files queue
+    """
+    try:
+        train_files_list = files_in_directory(FLAGS.train_data_path)
+        train_files_queue = tf.train.string_input_producer(train_files_list, shuffle=True)
+
+        validation_files_list = files_in_directory(FLAGS.validation_data_path)
+        validation_files_queue = tf.train.string_input_producer(validation_files_list, shuffle=False)
+
+        test_files_list = files_in_directory(FLAGS.test_data_path)
+        test_files_queue = tf.train.string_input_producer(test_files_list, shuffle=False)
+
+        return train_files_queue, validation_files_queue, test_files_queue
+
+    except:
+        print("Error: cannot make files queue.")
+        exit()
+
+
+def read_a_csv(files_queue):
     """
     read the data folder and returns a single csv file.
     :param data_type: "train", "validation" or "test".
     :return: a csv file's parsed result
     """
     try:
-        # Make files queue
-        if data_type.lower() == "train":
-            files_list = files_in_directory(FLAGS.train_data_path)
-            files_queue = tf.train.string_input_producer(files_list, shuffle=True)
-        elif data_type.lower() == "validation":
-            files_list = files_in_directory(FLAGS.validation_data_path)
-            files_queue = tf.train.string_input_producer(files_list, shuffle=False)
-        elif data_type.lower() == "test":
-            files_list = files_in_directory(FLAGS.test_data_path)
-            files_queue = tf.train.string_input_producer(files_list, shuffle=False)
-        else:
-            raise AttributeError("only train, validation or test data is available.")
-
         # Read the queue
         reader = tf.TextLineReader()
         _, read_value = reader.read(files_queue)
 
         # Decoder
-        record_defaults = [[0.]] * 261
+        record_defaults = [[0.]] * 259
         return tf.decode_csv(read_value, record_defaults=record_defaults)
 
     except:
-        print("Error: cannot read input data")
+        print("Error: cannot read input data.")
         exit()
 
 
-def get_batch(data_type: str, batch_size: int):
+def get_batch(batch_size: int, files_queue):
     """
     get batch for a given type, read from csv files.
     :param data_type: "train", "validation" or "test"
     :param batch_size: batch size to get
     :return: batcn tensor read from csv
     """
-    input_data = read_a_csv(data_type)
+    input_data = read_a_csv(files_queue)
     frequency_value = input_data[:256]
     file_type_in_one_hot = input_data[256:]
 
@@ -67,32 +76,32 @@ def get_batch(data_type: str, batch_size: int):
     return batch_frequency_value, batch_file_type_in_one_hot
 
 
-def next_train_batch(batch_size: int):
+def next_train_batch(batch_size: int, train_queue):
     """
     read a data file, and returns batch data.
     :param batch_size: bach size to get
     :return: batch value and file type encoded by one-hot encoding
     """
-    return get_batch("train", batch_size)
+    return get_batch(batch_size, train_queue)
 
 
-def validation_data_set():
+def validation_data_set(validation_queue):
     """
     iterate on validation data.
     :return: termination of iteration
     """
     for _ in range(len(files_in_directory(FLAGS.validation_data_path))):
-        yield get_batch("validation", FLAGS.num_of_fragments_per_csv)
+        yield get_batch(FLAGS.num_of_fragments_per_csv, validation_queue)
     return
 
 
-def test_data_set():
+def test_data_set(test_queue):
     """
     iterate on test data.
     :return: termination of iteration
     """
     for _ in range(len(files_in_directory(FLAGS.test_data_path))):
-        yield get_batch("test", FLAGS.num_of_fragments_per_csv)
+        yield get_batch(FLAGS.num_of_fragments_per_csv, test_queue)
     return
 
 
