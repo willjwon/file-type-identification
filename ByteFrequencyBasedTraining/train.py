@@ -7,6 +7,7 @@ def main():
     train_batch_byte_value, train_batch_file_type = next_train_batch(FLAGS.batch_size, train_queue)
     validation_batch_byte_value, validation_batch_file_type = get_data_set(validation_queue)
     test_batch_byte_value, test_batch_file_type = get_data_set(test_queue)
+    _, num_of_validation_files, num_of_test_files = get_num_of_data_files()
 
     # global step for train
     global_step = tf.Variable(0, trainable=False, name="global_step")
@@ -50,11 +51,16 @@ def main():
         for step in range(current_step, FLAGS.num_of_total_global_steps):
             # validation and save at checkpoint
             if step % FLAGS.checkpoint_steps == 0:
-                validation_byte_value, validation_file_type \
-                    = sess.run([validation_batch_byte_value, validation_batch_file_type])
-                computed_accuracy = \
-                    sess.run(accuracy, feed_dict={X: validation_byte_value, Y: validation_file_type, keep_prob: 1.0})
-                print("\tAt step {:>5}, accuracy: {:2.9f}%".format(step, computed_accuracy * 100))
+                average_accuracy = 0
+                for _ in range(num_of_validation_files):
+                    validation_byte_value, validation_file_type \
+                        = sess.run([validation_batch_byte_value, validation_batch_file_type])
+                    computed_accuracy = \
+                        sess.run(accuracy,
+                                 feed_dict={X: validation_byte_value, Y: validation_file_type, keep_prob: 1.0})
+                    average_accuracy += computed_accuracy
+                print("\tAt step {:>5}, accuracy: {:2.9f}%".format(step,
+                                                                   average_accuracy / num_of_validation_files * 100))
                 saver.save(sess, model_save_path, global_step=step)
 
             # train step
@@ -68,9 +74,13 @@ def main():
             print("step {:>5}, cost: {:2.9f}".format(step, c))
 
         # test the model
-        test_byte_value, test_file_type = sess.run([test_batch_byte_value, test_batch_file_type])
-        computed_accuracy = sess.run(accuracy, feed_dict={X: test_byte_value, Y: test_file_type, keep_prob: 1.0})
-        print("=== Test Result, accuracy: {:2.9f}%".format(computed_accuracy * 100))
+        average_accuracy = 0
+        for _ in range(num_of_test_files):
+            test_byte_value, test_file_type = sess.run([test_batch_byte_value, test_batch_file_type])
+            print(test_byte_value)
+            computed_accuracy = sess.run(accuracy, feed_dict={X: test_byte_value, Y: test_file_type, keep_prob: 1.0})
+            average_accuracy += computed_accuracy
+        print("=== Test Result, accuracy: {:2.9f}%".format(average_accuracy / num_of_test_files * 100))
 
         coord.request_stop()
         coord.join(threads)

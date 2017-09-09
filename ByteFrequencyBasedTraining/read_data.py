@@ -17,6 +17,17 @@ def files_in_directory(directory_path: str):
     return list(map(lambda filename: directory_path + filename, filename_list))
 
 
+def get_num_of_data_files():
+    """
+    get number of csv files for each given data type.
+    :return: "train", "validation" and "test" csv files
+    """
+    num_of_train_files = len(files_in_directory(FLAGS.train_data_path))
+    num_of_validation_files = len(files_in_directory(FLAGS.validation_data_path))
+    num_of_test_files = len(files_in_directory(FLAGS.test_data_path))
+    return num_of_train_files, num_of_validation_files, num_of_test_files
+
+
 def make_files_queue():
     """
     make files queue
@@ -87,13 +98,7 @@ def get_data_set(files_queue):
     return concatenated validatoin
     :return: termination of iteration
     """
-    result_frequency_value, result_file_type = get_batch(FLAGS.num_of_fragments_per_csv, files_queue)
-    for _ in range(len(files_in_directory(FLAGS.validation_data_path)) - 1):
-        frequency_value, file_type = get_batch(FLAGS.num_of_fragments_per_csv, files_queue)
-        result_frequency_value = tf.concat([result_frequency_value, frequency_value], 0)
-        result_file_type = tf.concat([result_file_type, file_type], 0)
-
-    return result_frequency_value, result_file_type
+    return get_batch(FLAGS.num_of_fragments_per_csv, files_queue)
 
 
 class Test(unittest.TestCase):
