@@ -33,10 +33,10 @@ FLAGS.learning_rate = 1e-4
 FLAGS.keep_prob_train = 0.5
 
 # global steps to repeat
-FLAGS.num_of_total_global_steps = 1000
+FLAGS.num_of_total_global_steps = 3000
 
 # checkpoint steps to save and validate
-FLAGS.checkpoint_steps = 50
+FLAGS.checkpoint_steps = 100
 
 # a mini batch's size
 FLAGS.batch_size = 100

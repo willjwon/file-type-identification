@@ -79,7 +79,6 @@ def main():
         average_accuracy = 0
         for _ in range(num_of_test_files):
             test_byte_value, test_file_type = sess.run([test_batch_byte_value, test_batch_file_type])
-            print(test_byte_value)
             computed_accuracy = sess.run(accuracy, feed_dict={X: test_byte_value, Y: test_file_type, keep_prob: 1.0})
             average_accuracy += computed_accuracy
         print("=== Test Result, accuracy: {:2.9f}%".format(average_accuracy / num_of_test_files * 100))
