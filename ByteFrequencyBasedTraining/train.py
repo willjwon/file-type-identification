@@ -8,7 +8,9 @@ def main():
     validation_batch_byte_value, validation_batch_file_type = get_data_set(validation_queue)
     test_batch_byte_value, test_batch_file_type = get_data_set(test_queue)
 
+    # global step for train
     global_step = tf.Variable(0, trainable=False, name="global_step")
+
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis, labels=Y))
     accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(hypothesis, 1), tf.argmax(Y, 1)), tf.float32))
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost, global_step=global_step)
@@ -20,20 +22,29 @@ def main():
     summary = tf.summary.merge_all()
     writer = tf.summary.FileWriter(FLAGS.tensorboard_directory)
 
+    # model save path
+    if not FLAGS.model_output_directory.endswith("/"):
+        FLAGS.model_output_directory += "/"
+    model_save_path = FLAGS.model_output_directory + "model.ckpt"
+
     with tf.Session() as sess:
         writer.add_graph(sess.graph)
-
-        checkpoint = tf.train.get_checkpoint_state(FLAGS.model_path)
-        if checkpoint and checkpoint.model_checkpoint_path:
-            saver.restore(sess, checkpoint.model_checkpoint_path)
-        else:
-            sess.run(tf.global_variables_initializer())
 
         # set the threads for reading data
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
-        current_step = sess.run(global_step)
+        # restore the data
+        latest_checkpoint = tf.train.latest_checkpoint(FLAGS.model_output_directory)
+        if latest_checkpoint is not None:
+            saver.restore(sess, latest_checkpoint)
+            current_step = sess.run(global_step)
+            print("Checkpoint at step {} is found. That model is loaded and used.".format(current_step))
+        else:
+            sess.run(tf.global_variables_initializer())
+            sess.run(tf.local_variables_initializer())
+            current_step = 0
+            print("No saved checkpoint is found. The model is initialized.")
 
         # train the model
         for step in range(current_step, FLAGS.num_of_total_global_steps):
@@ -43,25 +54,23 @@ def main():
                     = sess.run([validation_batch_byte_value, validation_batch_file_type])
                 computed_accuracy = \
                     sess.run(accuracy, feed_dict={X: validation_byte_value, Y: validation_file_type, keep_prob: 1.0})
-                print("\tAt step {:>5}, accuracy: {:2.9f}".format(step, computed_accuracy))
-                saver.save(sess, FLAGS.model_path, global_step=step)
+                print("\tAt step {:>5}, accuracy: {:2.9f}%".format(step, computed_accuracy * 100))
+                saver.save(sess, model_save_path, global_step=step)
 
             # train step
             batch_byte_value, batch_file_type = sess.run([train_batch_byte_value, train_batch_file_type])
-            cost, _, summary = sess.run([cost, optimizer, summary],
-                                        feed_dict={X: batch_byte_value,
-                                                   Y: batch_file_type,
-                                                   keep_prob: FLAGS.keep_prob_train})
+            c, _, s = sess.run([cost, optimizer, summary],
+                               feed_dict={X: batch_byte_value, Y: batch_file_type, keep_prob: FLAGS.keep_prob_train})
 
             # add summary to tensorboard
-            writer.add_summary(summary, global_step=global_step)
+            writer.add_summary(s, global_step=step)
 
-            print("step {:>5}, cost: {:2.9f}".format(step, cost))
+            print("step {:>5}, cost: {:2.9f}".format(step, c))
 
         # test the model
         test_byte_value, test_file_type = sess.run([test_batch_byte_value, test_batch_file_type])
         computed_accuracy = sess.run(accuracy, feed_dict={X: test_byte_value, Y: test_file_type, keep_prob: 1.0})
-        print("=== Test Result, accuracy: {:2.9f}".format(computed_accuracy))
+        print("=== Test Result, accuracy: {:2.9f}%".format(computed_accuracy * 100))
 
         coord.request_stop()
         coord.join(threads)

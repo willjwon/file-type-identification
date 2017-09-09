@@ -51,7 +51,7 @@ def read_a_csv(files_queue):
         _, read_value = reader.read(files_queue)
 
         # Decoder
-        record_defaults = [[0.]] * 259
+        record_defaults = [[0.]] * 261
         return tf.decode_csv(read_value, record_defaults=record_defaults)
 
     except:
@@ -70,10 +70,7 @@ def get_batch(batch_size: int, files_queue):
     frequency_value = input_data[:256]
     file_type_in_one_hot = input_data[256:]
 
-    batch_frequency_value, batch_file_type_in_one_hot \
-        = tf.train.batch([frequency_value, file_type_in_one_hot], batch_size=batch_size)
-
-    return batch_frequency_value, batch_file_type_in_one_hot
+    return tf.train.batch([frequency_value, file_type_in_one_hot], batch_size=batch_size)
 
 
 def next_train_batch(batch_size: int, train_queue):
@@ -85,14 +82,14 @@ def next_train_batch(batch_size: int, train_queue):
     return get_batch(batch_size, train_queue)
 
 
-def get_data_set(validation_queue):
+def get_data_set(files_queue):
     """
     return concatenated validatoin
     :return: termination of iteration
     """
-    result_frequency_value, result_file_type = get_batch(FLAGS.num_of_fragments_per_csv, validation_queue)
+    result_frequency_value, result_file_type = get_batch(FLAGS.num_of_fragments_per_csv, files_queue)
     for _ in range(len(files_in_directory(FLAGS.validation_data_path)) - 1):
-        frequency_value, file_type = get_batch(FLAGS.num_of_fragments_per_csv, validation_queue)
+        frequency_value, file_type = get_batch(FLAGS.num_of_fragments_per_csv, files_queue)
         result_frequency_value = tf.concat([result_frequency_value, frequency_value], 0)
         result_file_type = tf.concat([result_file_type, file_type], 0)
 
@@ -122,6 +119,6 @@ class Test(unittest.TestCase):
         coord = tf.train.Coordinator()
         tf.train.start_queue_runners(sess=sess, coord=coord)
 
-        for data in test_data_set():
-            print(data)
+        a, b, c = make_files_queue()
+        print(sess.run(get_batch(1, b)))
 

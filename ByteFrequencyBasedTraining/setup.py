@@ -23,8 +23,8 @@ FLAGS.test_data_path = "./test_data"
 # directory for tensorboard summary
 FLAGS.tensorboard_directory = './tensorboard/train1'
 
-# model;s path
-FLAGS.model_path = "./model/model.ckpt"
+# model's output directory
+FLAGS.model_output_directory = "./model"
 
 # learning rate
 FLAGS.learning_rate = 1e-5
