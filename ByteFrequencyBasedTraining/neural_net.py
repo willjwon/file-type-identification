@@ -52,40 +52,10 @@ with tf.variable_scope("layer4"):
     tf.summary.histogram("layer", L4)
 
 with tf.variable_scope("layer5"):
-    W5 = tf.get_variable(shape=[512, 512], initializer=tf.contrib.layers.xavier_initializer(), name="W5")
-    b5 = tf.Variable(tf.random_normal([512]), name="b5")
-    L5 = tf.nn.relu(tf.matmul(L4, W5) + b5)
-    L5 = tf.nn.dropout(L5, keep_prob=keep_prob)
+    W5 = tf.get_variable(shape=[512, 3], initializer=tf.contrib.layers.xavier_initializer(), name="W5")
+    b5 = tf.Variable(tf.random_normal([3]), name="b5")
+    hypothesis = tf.matmul(L4, W5) + b5
 
     tf.summary.histogram("weights", W5)
     tf.summary.histogram("bias", b5)
-    tf.summary.histogram("layer", L5)
-
-with tf.variable_scope("layer6"):
-    W6 = tf.get_variable(shape=[512, 512], initializer=tf.contrib.layers.xavier_initializer(), name="W6")
-    b6 = tf.Variable(tf.random_normal([512]), name="b6")
-    L6 = tf.nn.relu(tf.matmul(L5, W6) + b6)
-    L6 = tf.nn.dropout(L6, keep_prob=keep_prob)
-
-    tf.summary.histogram("weights", W6)
-    tf.summary.histogram("bias", b6)
-    tf.summary.histogram("layer", L6)
-
-with tf.variable_scope("layer7"):
-    W7 = tf.get_variable(shape=[512, 512], initializer=tf.contrib.layers.xavier_initializer(), name="W7")
-    b7 = tf.Variable(tf.random_normal([512]), name="b7")
-    L7 = tf.nn.relu(tf.matmul(L6, W7) + b7)
-    L7 = tf.nn.dropout(L7, keep_prob=keep_prob)
-
-    tf.summary.histogram("weights", W7)
-    tf.summary.histogram("bias", b7)
-    tf.summary.histogram("layer", L7)
-
-with tf.variable_scope("layer8"):
-    W8 = tf.get_variable(shape=[512, 3], initializer=tf.contrib.layers.xavier_initializer(), name="W8")
-    b8 = tf.Variable(tf.random_normal([3]), name="b8")
-    hypothesis = tf.nn.relu(tf.matmul(L7, W8) + b8)
-
-    tf.summary.histogram("weights", W8)
-    tf.summary.histogram("bias", b8)
     tf.summary.histogram("hypothesis", hypothesis)
