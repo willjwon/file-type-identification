@@ -13,8 +13,9 @@ __init__.py
 
 # CLion and CMake
 cmake-build-debug/
-CMakeLists.txt
 cmake_install.cmake
+CMakeFiles/
+CMakeCache.txt
 *.make
 
 # Makefile
@@ -26,3 +27,10 @@ Makefile
 **/test_data/
 **/model/
 **/tensorboard/
+
+# FileFragmentGenerator Input and Output
+FileFragmentGenerator/FileFragmentGenerator
+FileFragmentGenerator/FileFragmentGenerator.cbp
+FileFragmentGenerator/input/
+FileFragmentGenerator/output/
+
