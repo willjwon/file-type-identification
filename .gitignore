@@ -9,6 +9,7 @@
 
 # Python
 __pycache__/
+__init__.py
 
 # CLion and CMake
 cmake-build-debug/
@@ -19,6 +20,13 @@ CMakeCache.txt
 
 # Makefile
 Makefile
+
+# TensorFlow Input files
+**/train_data/
+**/validation_data/
+**/test_data/
+**/model/
+**/tensorboard/
 
 # FileFragmentGenerator Input and Output
 FileFragmentGenerator/FileFragmentGenerator
