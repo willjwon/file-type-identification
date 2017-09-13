@@ -202,7 +202,7 @@ void baryberri::FileManager::getFragment(char* fragmentArray) {
     reloadInputStream();
     inputFileStream.read(fragmentArray, fragmentSize);
     currentFileOffset += fragmentSize;
-    if (inputFileStream.gcount() < fragmentSize) {
+    while (inputFileStream.gcount() < fragmentSize) {
         setToNextFile();
         getFragment(fragmentArray);
     }
