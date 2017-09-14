@@ -1,5 +1,6 @@
 #include <dirent.h>
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include "FileManager.hpp"
 
@@ -172,6 +173,9 @@ void baryberri::FileManager::setToNextFile() {
         rewindFile();
         setToNextOffset();
         inputFilePath = getNextFilePath();
+        std::cout << std::fixed << std::setprecision(2)
+                  << "Files exhausted. Rewound to the first file with offset "
+                  << (double)baseOffset / fragmentSize << std::endl;
     }
     currentFileOffset = baseOffset;
     inputFileStream.open(inputFilePath);
