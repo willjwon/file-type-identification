@@ -51,7 +51,7 @@ int main() {
         auto numOfValidTypes = (int) (numOfFragmentsLeft.size());
         int randomIndex = 0;
 
-        std::cout << "Generating file fragments..." << std::endl;
+        std::cout << "Generating file fragments...\n" << std::endl;
 
         while (checkFragmentsLeft(numOfFragmentsLeft)) {
             do {
@@ -61,9 +61,10 @@ int main() {
             numOfFragmentsLeft[randomIndex]--;
         }
     } else {
-        std::cout << "sequential!" << std::endl;
         FileManager fileManager;
         while (fileManager.setToNextType()) {
+            std::cout << "Fragments of type " << fileManager.getCurrentFileType() << " is available." << std::endl;
+            std::cout << "Generating fragments of type " << fileManager.getCurrentFileType() << "...\n" << std::endl;
             fileManager.makeFragments(numOfFragments);
         }
     }
@@ -73,7 +74,7 @@ int main() {
 
     // print the running time.
     std::clock_t endTime = clock();
-    std::cout << "Fragment generation is done." << std::endl;
+    std::cout << "Fragment generation is done.\n" << std::endl;
     std::cout << std::fixed << std::setprecision(2)
               << "Total Running Time: " << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << std::endl;
 

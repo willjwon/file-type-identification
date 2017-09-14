@@ -95,8 +95,8 @@ private:
     /// save settings.json
     static json* settings;
 
-    /// get how many file types exist.
-    static int numOfGroups;
+    /// number of total file types
+    static int numOfFileTypes;
 
     /// number of groups of file types
     static int numOfGroups;
@@ -140,7 +140,7 @@ private:
     void computeNgram(char* const& fragmentArray, int* gramArray);
 
     /// save n-gram data into csv file.
-    void saveGramData(int* const& gramArray);
+    void saveGramData(double* const& gramArray);
 
     /// set offset to next available offset.
     void setToNextOffset();
