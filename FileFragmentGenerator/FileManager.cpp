@@ -6,11 +6,12 @@
 
 
 json* baryberri::FileManager::settings = nullptr;
-int baryberri::FileManager::numOfFileTypes = 0;
+int baryberri::FileManager::numOfGroups = 0;
 std::string baryberri::FileManager::outputBasePath = "";
 int baryberri::FileManager::currentOutputFileNumber = 0;
 std::ifstream baryberri::FileManager::inputFileStream;
 std::ofstream baryberri::FileManager::outputFileStream;
+
 
 baryberri::FileManager::FileManager() {
     std::vector<std::string> fileTypes = (*settings)["fileType"];
@@ -22,8 +23,8 @@ baryberri::FileManager::FileManager() {
     gramSize = (*settings)["settings"]["gram"];
     fragmentSize = (*settings)["settings"]["fragmentSize"];
     numOfFragmentsPerCSV = (*settings)["settings"]["fragmentsPerCSV"];
+    numOfGroups = (*settings)["numOfGroups"];
     currentFile = nullptr;
-    numOfFileTypes = (int)(fileTypes.size());
     numerator = 1;
     denominator = 2;
 
@@ -50,7 +51,7 @@ baryberri::FileManager::FileManager(const std::string& fileType) {
     gramSize = (*settings)["settings"]["gram"];
     fragmentSize = (*settings)["settings"]["fragmentSize"];
     numOfFragmentsPerCSV = (*settings)["settings"]["fragmentsPerCSV"];
-    numOfFileTypes = (int)(fileTypes.size());
+    numOfGroups = (*settings)["numOfGroups"];
     numerator = 1;
     denominator = 2;
 
@@ -92,7 +93,7 @@ const bool baryberri::FileManager::setToNextType() {
     auto inputDirectories = (*settings)["inputDirectory"];
 
     currentFileTypeIndex++;
-    if (currentFileTypeIndex >= numOfFileTypes) {
+    if (currentFileTypeIndex >= numOfGroups) {
         return false;
     }
 
@@ -224,13 +225,13 @@ void baryberri::FileManager::saveRawFragmentData(char* const& fragmentArray) {
         outputFileStream << int((unsigned char)(fragmentArray[i])) << ",";
     }
     int fileTypeKey = (*settings)["typeKey"][currentFileType];
-    for (int i = 0; i < numOfFileTypes; i++) {
+    for (int i = 0; i < numOfGroups; i++) {
         if (i == fileTypeKey) {
             outputFileStream << 1;
         } else {
             outputFileStream << 0;
         }
-        if (i != numOfFileTypes - 1) {
+        if (i != numOfGroups - 1) {
             outputFileStream << ",";
         } else {
             outputFileStream << std::endl;
@@ -259,13 +260,13 @@ void baryberri::FileManager::saveGramData(int* const & gramArray) {
         outputFileStream << gramArray[i] << ",";
     }
     int fileTypeKey = (*settings)["typeKey"][currentFileType];
-    for (int i = 0; i < numOfFileTypes; i++) {
+    for (int i = 0; i < numOfGroups; i++) {
         if (i == fileTypeKey) {
             outputFileStream << 1;
         } else {
             outputFileStream << 0;
         }
-        if (i != numOfFileTypes - 1) {
+        if (i != numOfGroups - 1) {
             outputFileStream << ",";
         } else {
             outputFileStream << std::endl;

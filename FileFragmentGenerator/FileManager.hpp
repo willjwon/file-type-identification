@@ -51,16 +51,6 @@ public:
     /// \param settings json settings to set
     static void setSettings(json* settings);
 
-//    /// get currentFileType.
-//    ///
-//    /// \return currentFileType
-//    const std::string getCurrentFileType();
-//
-//    /// get numOfFileTypes;
-//    ///
-//    /// \return numOfFileTypes;
-//    static const int getNumOfFileTypes();
-
 private:
     /// settings has "fileType": ["html", "hwp", "pdf", "docx", "xlsx"] field.
     /// currentFileType indicates currently selected file type.
@@ -106,7 +96,10 @@ private:
     static json* settings;
 
     /// get how many file types exist.
-    static int numOfFileTypes;
+    static int numOfGroups;
+
+    /// number of groups of file types
+    static int numOfGroups;
 
     /// save current output stream's path.
     static std::string outputBasePath;
