@@ -19,6 +19,7 @@
 
     "outputDirectory": "./output",
     "outputFileName": "frequency_",
+    "shuffleOutput": true,
 
     "settings": {
         "gram": 1,
