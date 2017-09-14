@@ -95,6 +95,10 @@ private:
     /// input file's path
     std::string inputFilePath;
 
+    /// numerator and denominator of the base offset.
+    int numerator;
+    int denominator;
+
     /// indicates the current file.
     struct dirent* currentFile;
 

@@ -24,6 +24,8 @@ baryberri::FileManager::FileManager() {
     numOfFragmentsPerCSV = (*settings)["settings"]["fragmentsPerCSV"];
     currentFile = nullptr;
     numOfFileTypes = (int)(fileTypes.size());
+    numerator = 1;
+    denominator = 2;
 
     std::string outputDirectory = (*settings)["outputDirectory"];
     if (!has_suffix(outputDirectory, "/")) {
@@ -49,6 +51,8 @@ baryberri::FileManager::FileManager(const std::string& fileType) {
     fragmentSize = (*settings)["settings"]["fragmentSize"];
     numOfFragmentsPerCSV = (*settings)["settings"]["fragmentsPerCSV"];
     numOfFileTypes = (int)(fileTypes.size());
+    numerator = 1;
+    denominator = 2;
 
     std::string outputDirectory = (*settings)["outputDirectory"];
     if (!has_suffix(outputDirectory, "/")) {
@@ -113,8 +117,14 @@ const bool baryberri::FileManager::setToNextType() {
 
 void baryberri::FileManager::makeFragment() {
     static int numOfFragmentsGenerated = 0;
+
+    if (numOfFragmentsGenerated != 0 && numOfFragmentsGenerated % numOfFragmentsPerCSV == 0) {
+        changeToNextOutputFile();
+    }
+
     auto* fragmentArray = new char[fragmentSize];
     getFragment(fragmentArray);
+
     if (gramSize == 0) {
         saveRawFragmentData(fragmentArray);
     } else {
@@ -123,10 +133,7 @@ void baryberri::FileManager::makeFragment() {
         saveGramData(gramArray);
     }
 
-    if ((++numOfFragmentsGenerated) % numOfFragmentsPerCSV == 0) {
-        changeToNextOutputFile();
-    }
-
+    numOfFragmentsGenerated++;
 }
 
 void baryberri::FileManager::makeFragments(const int fragmentNumber) {
@@ -174,7 +181,7 @@ void baryberri::FileManager::setToNextFile() {
         setToNextOffset();
         inputFilePath = getNextFilePath();
         std::cout << std::fixed << std::setprecision(2)
-                  << "Files exhausted. Rewound to the first file with offset "
+                  << "Files of type " << currentFileType << " is exhausted. Rewound to the first file with offset "
                   << (double)baseOffset / fragmentSize << std::endl;
     }
     currentFileOffset = baseOffset;
@@ -268,9 +275,6 @@ void baryberri::FileManager::saveGramData(int* const & gramArray) {
 
 void baryberri::FileManager::setToNextOffset() {
     // offset has `(numerator / denominator) * fragmentSize` format.
-    static int numerator = 1;
-    static int denominator = 2;
-
     baseOffset = int(((double)numerator / (double)denominator) * fragmentSize);
 
     numerator += 2;
