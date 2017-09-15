@@ -36,11 +36,17 @@ FLAGS.keep_prob_train = 0.5
 FLAGS.num_of_total_global_steps = 3000
 
 # checkpoint steps to save and validate
-FLAGS.checkpoint_steps = 100
+FLAGS.checkpoint_steps = 50
 
 # a mini batch's size
 FLAGS.batch_size = 100
 
 # csv information
 FLAGS.num_of_fragments_per_csv = 100
+FLAGS.num_of_validation_files_per_type = 50
+FLAGS.num_of_test_files_per_type = 100
+
+# type information
+FLAGS.num_of_file_types = 3
+FLAGS.file_type_name = ["hwp", "jpg", "mp3"]
 # =================================

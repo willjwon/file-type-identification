@@ -62,7 +62,7 @@ def read_a_csv(files_queue):
         _, read_value = reader.read(files_queue)
 
         # Decoder
-        record_defaults = [[0.]] * 4101
+        record_defaults = [[0.]] * (4096 + FLAGS.num_of_file_types)
         return tf.decode_csv(read_value, record_defaults=record_defaults)
 
     except:

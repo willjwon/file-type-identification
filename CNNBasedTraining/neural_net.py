@@ -4,7 +4,7 @@ from setup import *
 # x: byte value (0 ~ 255)
 # y: 5 file types in one hot encoding
 X = tf.placeholder(tf.float32, [None, 4096])
-Y = tf.placeholder(tf.float32, [None, 5])
+Y = tf.placeholder(tf.float32, [None, FLAGS.num_of_file_types])
 
 X_2d = tf.reshape(X, shape=[-1, 64, 64, 1])
 
@@ -86,8 +86,8 @@ with tf.name_scope("layer5"):
 
 
 with tf.name_scope("layer6"):
-    W6 = weight_variable([512, 5], name="W6")
-    b6 = bias_variable([5], name="b6")
+    W6 = weight_variable([512, FLAGS.num_of_file_types], name="W6")
+    b6 = bias_variable([FLAGS.num_of_file_types], name="b6")
     hypothesis = tf.matmul(L5_out, W6) + b6
 
     tf.summary.histogram("weights", W6)
