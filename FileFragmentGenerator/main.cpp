@@ -32,28 +32,41 @@ int main() {
             mkdir(inputDirectoryPath.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
     }
 
-    // Check how many file types have valid input files.
+    // check shuffling, and do the right stuff.
+    bool shuffle = settings["shuffleOutput"];
     int numOfFragments = settings["settings"]["totalFragmentsPerType"];
-    std::vector<int> numOfFragmentsLeft;
-    std::vector<FileManager*> fileManagers;
+    if (shuffle) {
+        // Check how many file types have valid input files.
+        std::vector<int> numOfFragmentsLeft;
+        std::vector<FileManager*> fileManagers;
 
-    FileManager defaultManager;
-    while (defaultManager.setToNextType()) {
-        std::cout << "Fragments of type " << defaultManager.getCurrentFileType() << " is available." << std::endl;
-        fileManagers.push_back(new FileManager(defaultManager.getCurrentFileType()));
-        numOfFragmentsLeft.push_back(numOfFragments);
-    }
+        FileManager defaultManager;
+        while (defaultManager.setToNextType()) {
+            std::cout << "Fragments of type " << defaultManager.getCurrentFileType() << " is available." << std::endl;
+            fileManagers.push_back(new FileManager(defaultManager.getCurrentFileType()));
+            numOfFragmentsLeft.push_back(numOfFragments);
+        }
 
-    // Make fragments and save.
-    auto numOfValidTypes = (int)(numOfFragmentsLeft.size());
-    int randomIndex = 0;
-    std::cout << "Generating file fragments..." << std::endl;
-    while (checkFragmentsLeft(numOfFragmentsLeft)) {
-        do {
-            randomIndex = getRandom(0, numOfValidTypes);
-        } while (numOfFragmentsLeft[randomIndex] == 0);
-        fileManagers[randomIndex]->makeFragment();
-        numOfFragmentsLeft[randomIndex]--;
+        // Make fragments and save.
+        auto numOfValidTypes = (int) (numOfFragmentsLeft.size());
+        int randomIndex = 0;
+
+        std::cout << "Generating file fragments...\n" << std::endl;
+
+        while (checkFragmentsLeft(numOfFragmentsLeft)) {
+            do {
+                randomIndex = getRandom(0, numOfValidTypes);
+            } while (numOfFragmentsLeft[randomIndex] == 0);
+            fileManagers[randomIndex]->makeFragment();
+            numOfFragmentsLeft[randomIndex]--;
+        }
+    } else {
+        FileManager fileManager;
+        while (fileManager.setToNextType()) {
+            std::cout << "Fragments of type " << fileManager.getCurrentFileType() << " is available." << std::endl;
+            std::cout << "Generating fragments of type " << fileManager.getCurrentFileType() << "...\n" << std::endl;
+            fileManager.makeFragments(numOfFragments);
+        }
     }
 
     // close settings file
@@ -61,7 +74,7 @@ int main() {
 
     // print the running time.
     std::clock_t endTime = clock();
-    std::cout << "Fragment generation is done." << std::endl;
+    std::cout << "Fragment generation is done.\n" << std::endl;
     std::cout << std::fixed << std::setprecision(2)
               << "Total Running Time: " << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << std::endl;
 

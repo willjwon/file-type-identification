@@ -17,8 +17,11 @@
         "xlsx": 4
     },
 
+    "numOfGroups": 5, 
+
     "outputDirectory": "./output",
     "outputFileName": "frequency_",
+    "shuffleOutput": true,
 
     "settings": {
         "gram": 1,

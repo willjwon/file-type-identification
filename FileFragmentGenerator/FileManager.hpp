@@ -51,16 +51,6 @@ public:
     /// \param settings json settings to set
     static void setSettings(json* settings);
 
-//    /// get currentFileType.
-//    ///
-//    /// \return currentFileType
-//    const std::string getCurrentFileType();
-//
-//    /// get numOfFileTypes;
-//    ///
-//    /// \return numOfFileTypes;
-//    static const int getNumOfFileTypes();
-
 private:
     /// settings has "fileType": ["html", "hwp", "pdf", "docx", "xlsx"] field.
     /// currentFileType indicates currently selected file type.
@@ -95,14 +85,21 @@ private:
     /// input file's path
     std::string inputFilePath;
 
+    /// numerator and denominator of the base offset.
+    int numerator;
+    int denominator;
+
     /// indicates the current file.
     struct dirent* currentFile;
 
     /// save settings.json
     static json* settings;
 
-    /// get how many file types exist.
+    /// number of total file types
     static int numOfFileTypes;
+
+    /// number of groups of file types
+    static int numOfGroups;
 
     /// save current output stream's path.
     static std::string outputBasePath;
@@ -143,7 +140,7 @@ private:
     void computeNgram(char* const& fragmentArray, int* gramArray);
 
     /// save n-gram data into csv file.
-    void saveGramData(int* const& gramArray);
+    void saveGramData(double* const& gramArray);
 
     /// set offset to next available offset.
     void setToNextOffset();
