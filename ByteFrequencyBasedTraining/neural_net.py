@@ -4,7 +4,7 @@ from setup import *
 # x: byte value (0 ~ 255)
 # y: 5 file types in one hot encoding
 X = tf.placeholder(tf.float32, [None, 256])
-Y = tf.placeholder(tf.float32, [None, 3])
+Y = tf.placeholder(tf.float32, [None, FLAGS.num_of_file_types])
 
 # keep probability placeholder for dropout
 keep_prob = tf.placeholder(tf.float32)
@@ -52,8 +52,8 @@ with tf.variable_scope("layer4"):
     tf.summary.histogram("layer", L4)
 
 with tf.variable_scope("layer5"):
-    W5 = tf.get_variable(shape=[512, 3], initializer=tf.contrib.layers.xavier_initializer(), name="W5")
-    b5 = tf.Variable(tf.random_normal([3]), name="b5")
+    W5 = tf.get_variable(shape=[512, FLAGS.num_of_file_types], initializer=tf.contrib.layers.xavier_initializer(), name="W5")
+    b5 = tf.Variable(tf.random_normal([FLAGS.num_of_file_types]), name="b5")
     hypothesis = tf.matmul(L4, W5) + b5
 
     tf.summary.histogram("weights", W5)

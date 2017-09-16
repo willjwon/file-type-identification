@@ -1,10 +1,10 @@
 import tensorflow as tf
 
 """
-==================================================
-================== Constants =====================
-==================================================
-"""
+    ==================================================
+    ================== Constants =====================
+    ==================================================
+    """
 
 # Flags to use. DO NOT MODIFY HERE!
 # =================================
@@ -27,20 +27,26 @@ FLAGS.tensorboard_directory = './tensorboard/train1'
 FLAGS.model_output_directory = "./model"
 
 # learning rate
-FLAGS.learning_rate = 1e-5
+FLAGS.learning_rate = 1e-4
 
 # keep probability for dropout while training
-FLAGS.keep_prob_train = 0.7
+FLAGS.keep_prob_train = 0.5
 
 # global steps to repeat
-FLAGS.num_of_total_global_steps = 100
+FLAGS.num_of_total_global_steps = 10000
 
 # checkpoint steps to save and validate
-FLAGS.checkpoint_steps = 10
+FLAGS.checkpoint_steps = 200
 
 # a mini batch's size
-FLAGS.batch_size = 500
+FLAGS.batch_size = 100
 
 # csv information
-FLAGS.num_of_fragments_per_csv = 1000
+FLAGS.num_of_fragments_per_csv = 100
+FLAGS.num_of_validation_files_per_type = 50
+FLAGS.num_of_test_files_per_type = 100
+
+# type information
+FLAGS.num_of_file_types = 3
+FLAGS.file_type_name = ["hwp", "jpg", "mp3"]
 # =================================
