@@ -57,7 +57,7 @@ def main():
             print("No saved checkpoint is found. The model is initialized.\n")
 
         # train the model
-        for step in range(current_step, FLAGS.num_of_total_global_steps):
+        for step in range(current_step, FLAGS.num_of_total_global_steps + 1):
             # train step
             batch_byte_value, batch_file_type = sess.run([train_batch_byte_value, train_batch_file_type])
             c, _, s = sess.run([cost, optimizer, summary],
@@ -75,17 +75,11 @@ def main():
 
                 # validation
                 print("\nValidating. Please wait...".format(step))
-                print("Validation Result:")
-                print("\t | ", end="")
-                for i in range(FLAGS.num_of_file_types):
-                    print("{}\t\t".format(FLAGS.file_type_name[i]), end="")
-                print("")
-                print("-" * 50)
 
                 average_accuracy = 0.
-                accuracy_each_type = []
-                for i in range(FLAGS.num_of_file_types):
-                    accuracy_each_type.append([0] * FLAGS.num_of_file_types)
+                accuracy_each_type = [[0] * FLAGS.num_of_file_types for _ in range(FLAGS.num_of_file_types)]
+                # for i in range(FLAGS.num_of_file_types):
+                #     accuracy_each_type.append([0] * FLAGS.num_of_file_types)
 
                 for i in range(1, num_of_validation_files + 1):
                     validation_byte_value, validation_file_type \
@@ -100,8 +94,14 @@ def main():
                         accuracy_each_type[current_file_type][j] += sess.run(classify_count(result, j),
                                                                              feed_dict={Y: validation_file_type})
 
+                print("Validation Result Table:")
+                print("\t | ", end="")
                 for i in range(FLAGS.num_of_file_types):
-                    print("{}\t | ".format(FLAGS.file_type_name[i]), end="")
+                    print("{:<5}\t\t".format(FLAGS.file_type_name[i]), end="")
+                print("")
+                print("----------" * (FLAGS.num_of_file_types + 1))
+                for i in range(FLAGS.num_of_file_types):
+                    print("{:<5}\t | ".format(FLAGS.file_type_name[i]), end="")
                     for j in range(FLAGS.num_of_file_types):
                         print("{:2.2f}%\t\t".format(
                             accuracy_each_type[i][j] /
@@ -109,8 +109,8 @@ def main():
                             * 100),
                             end="")
                     print("")
-                print("-" * 50)
-                print("Validation Result: accuracy: {:2.9f}%".format(average_accuracy / num_of_validation_files * 100))
+                print("----------" * (FLAGS.num_of_file_types + 1))
+                print("Validation Accuracy: {:2.9f}%\n".format(average_accuracy / num_of_validation_files * 100))
 
             # add summary to tensorboard
             writer.add_summary(s, global_step=step)
@@ -118,16 +118,10 @@ def main():
         # test the model
         print("Testing. Please wait...\n")
 
-        print("\t | ", end="")
-        for i in range(FLAGS.num_of_file_types):
-            print("{}\t\t".format(FLAGS.file_type_name[i]), end="")
-        print("")
-        print("-" * 50)
-
         average_accuracy = 0.
-        accuracy_each_type = []
-        for i in range(FLAGS.num_of_file_types):
-            accuracy_each_type.append([0] * FLAGS.num_of_file_types)
+        accuracy_each_type = [[0] * FLAGS.num_of_file_types for _ in range(FLAGS.num_of_file_types)]
+        # for i in range(FLAGS.num_of_file_types):
+        #     accuracy_each_type.append([0] * FLAGS.num_of_file_types)
 
         for i in range(1, num_of_test_files + 1):
             test_byte_value, test_file_type = sess.run([test_batch_byte_value, test_batch_file_type])
@@ -138,8 +132,14 @@ def main():
             for j in range(FLAGS.num_of_file_types):
                 accuracy_each_type[current_file_type][j] += sess.run(classify_count(result, j), feed_dict={Y: test_file_type})
 
+        print("\t | ", end="")
         for i in range(FLAGS.num_of_file_types):
-            print("{}\t | ".format(FLAGS.file_type_name[i]), end="")
+            print("{:<5}\t\t".format(FLAGS.file_type_name[i]), end="")
+        print("")
+        print("----------" * (FLAGS.num_of_file_types + 1))
+
+        for i in range(FLAGS.num_of_file_types):
+            print("{:<5}\t | ".format(FLAGS.file_type_name[i]), end="")
             for j in range(FLAGS.num_of_file_types):
                 print("{:2.2f}%\t\t".format(
                     accuracy_each_type[i][j] /
@@ -148,8 +148,8 @@ def main():
                     end="")
             print("")
 
-        print("-" * 50)
-        print("Test Result: accuracy: {:2.9f}%".format(average_accuracy / num_of_test_files * 100))
+        print("----------" * (FLAGS.num_of_file_types + 1))
+        print("Test Result: accuracy: {:2.9f}%\n".format(average_accuracy / num_of_test_files * 100))
 
         coord.request_stop()
         coord.join(threads)
