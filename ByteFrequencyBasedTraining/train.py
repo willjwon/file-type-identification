@@ -20,7 +20,8 @@ def main():
         return tf.reduce_sum(tf.cast(tf.equal(tensor, value), tf.int32))
 
     def accuracy(result):
-        return tf.reduce_mean(tf.cast(tf.equal(result, tf.argmax(Y, 1)), tf.float32))
+        file_type = tf.argmax(Y, 1)[0]
+        return file_type, tf.reduce_mean(tf.cast(tf.equal(result, tf.argmax(Y, 1)), tf.float32))
 
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost, global_step=global_step)
     tf.summary.scalar(name="cost", tensor=cost)
@@ -82,7 +83,9 @@ def main():
                 print("-" * 50)
 
                 average_accuracy = 0.
-                accuracy_each_type = [0] * FLAGS.num_of_file_types
+                accuracy_each_type = []
+                for i in range(FLAGS.num_of_file_types):
+                    accuracy_each_type.append([0] * FLAGS.num_of_file_types)
 
                 for i in range(1, num_of_validation_files + 1):
                     validation_byte_value, validation_file_type \
@@ -90,23 +93,22 @@ def main():
                     result = sess.run(classify_result,
                                       feed_dict={X: validation_byte_value, keep_prob: 1.0})
 
-                    average_accuracy += sess.run(accuracy(result), feed_dict={Y: validation_file_type})
+                    current_file_type, current_accuracy = sess.run(accuracy(result), feed_dict={Y: validation_file_type})
+                    average_accuracy += current_accuracy
 
                     for j in range(FLAGS.num_of_file_types):
-                        accuracy_each_type[j] += sess.run(classify_count(result, j))
+                        accuracy_each_type[current_file_type][j] += sess.run(classify_count(result, j),
+                                                                             feed_dict={Y: validation_file_type})
 
-                    if i % FLAGS.num_of_validation_files_per_type == 0:
-                        print("{}\t | ".format(
-                            FLAGS.file_type_name[int(i / FLAGS.num_of_validation_files_per_type) - 1]), end="")
-                        for j in range(FLAGS.num_of_file_types):
-                            print("{:2.2f}%\t\t".format(
-                                accuracy_each_type[j] /
-                                (FLAGS.num_of_validation_files_per_type * FLAGS.num_of_fragments_per_csv)
-                                * 100),
-                                end="")
-                        print("")
-                        accuracy_each_type = [0.] * FLAGS.num_of_file_types
-
+                for i in range(FLAGS.num_of_file_types):
+                    print("{}\t | ".format(FLAGS.file_type_name[i]), end="")
+                    for j in range(FLAGS.num_of_file_types):
+                        print("{:2.2f}%\t\t".format(
+                            accuracy_each_type[i][j] /
+                            (FLAGS.num_of_validation_files_per_type * FLAGS.num_of_fragments_per_csv)
+                            * 100),
+                            end="")
+                    print("")
                 print("-" * 50)
                 print("Validation Result: accuracy: {:2.9f}%".format(average_accuracy / num_of_validation_files * 100))
 
@@ -123,25 +125,28 @@ def main():
         print("-" * 50)
 
         average_accuracy = 0.
-        accuracy_each_type = [0] * FLAGS.num_of_file_types
+        accuracy_each_type = []
+        for i in range(FLAGS.num_of_file_types):
+            accuracy_each_type.append([0] * FLAGS.num_of_file_types)
 
         for i in range(1, num_of_test_files + 1):
             test_byte_value, test_file_type = sess.run([test_batch_byte_value, test_batch_file_type])
             result = sess.run(classify_result, feed_dict={X: test_byte_value, keep_prob: 1.0})
 
-            average_accuracy += sess.run(accuracy(result), feed_dict={Y: test_file_type})
-
+            current_file_type, current_accuracy = sess.run(accuracy(result), feed_dict={Y: test_file_type})
+            average_accuracy += current_accuracy
             for j in range(FLAGS.num_of_file_types):
-                accuracy_each_type[j] += sess.run(classify_count(result, j))
+                accuracy_each_type[current_file_type][j] += sess.run(classify_count(result, j), feed_dict={Y: test_file_type})
 
-            if i % FLAGS.num_of_test_files_per_type == 0:
-                print("{}\t | ".format(FLAGS.file_type_name[int(i / FLAGS.num_of_test_files_per_type) - 1]), end="")
-                for j in range(FLAGS.num_of_file_types):
-                    print("{:2.2f}%\t\t".format(accuracy_each_type[j] /
-                                                (FLAGS.num_of_test_files_per_type * FLAGS.num_of_fragments_per_csv)
-                                                * 100), end="")
-                print("")
-                accuracy_each_type = [0.] * FLAGS.num_of_file_types
+        for i in range(FLAGS.num_of_file_types):
+            print("{}\t | ".format(FLAGS.file_type_name[i]), end="")
+            for j in range(FLAGS.num_of_file_types):
+                print("{:2.2f}%\t\t".format(
+                    accuracy_each_type[i][j] /
+                    (FLAGS.num_of_test_files_per_type * FLAGS.num_of_fragments_per_csv)
+                    * 100),
+                    end="")
+            print("")
 
         print("-" * 50)
         print("Test Result: accuracy: {:2.9f}%".format(average_accuracy / num_of_test_files * 100))
