@@ -1,10 +1,5 @@
 import tensorflow as tf
 
-"""
-    ==================================================
-    ================== Constants =====================
-    ==================================================
-    """
 
 # Flags to use. DO NOT MODIFY HERE!
 # =================================
@@ -36,7 +31,7 @@ FLAGS.keep_prob_train = 0.5
 FLAGS.num_of_total_global_steps = 10000
 
 # checkpoint steps to save and validate
-FLAGS.checkpoint_steps = 200
+FLAGS.checkpoint_steps = 1000
 
 # a mini batch's size
 FLAGS.batch_size = 100

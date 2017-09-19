@@ -74,7 +74,7 @@ def main():
                 print("Model successfully saved at {}.\n".format(model_saved_path))
 
                 # validation
-                print("\nValidating. Please wait...".format(step))
+                print("Validating. Please wait...".format(step))
 
                 average_accuracy = 0.
                 accuracy_each_type = [[0] * FLAGS.num_of_file_types for _ in range(FLAGS.num_of_file_types)]
@@ -94,14 +94,14 @@ def main():
                         accuracy_each_type[current_file_type][j] += sess.run(classify_count(result, j),
                                                                              feed_dict={Y: validation_file_type})
 
-                print("Validation Result Table:")
-                print("\t | ", end="")
+                print("\nValidation Result Table:")
+                print("{:<5} | ".format("re\\ch"), end="")
                 for i in range(FLAGS.num_of_file_types):
                     print("{:<5}\t\t".format(FLAGS.file_type_name[i]), end="")
                 print("")
                 print("----------" * (FLAGS.num_of_file_types + 1))
                 for i in range(FLAGS.num_of_file_types):
-                    print("{:<5}\t | ".format(FLAGS.file_type_name[i]), end="")
+                    print("{:<5} | ".format(FLAGS.file_type_name[i]), end="")
                     for j in range(FLAGS.num_of_file_types):
                         print("{:2.2f}%\t\t".format(
                             accuracy_each_type[i][j] /
@@ -130,16 +130,17 @@ def main():
             current_file_type, current_accuracy = sess.run(accuracy(result), feed_dict={Y: test_file_type})
             average_accuracy += current_accuracy
             for j in range(FLAGS.num_of_file_types):
-                accuracy_each_type[current_file_type][j] += sess.run(classify_count(result, j), feed_dict={Y: test_file_type})
+                accuracy_each_type[current_file_type][j] += sess.run(classify_count(result, j),
+                                                                     feed_dict={Y: test_file_type})
 
-        print("\t | ", end="")
+        print("{:<5} | ".format("re\\ch"), end="")
         for i in range(FLAGS.num_of_file_types):
             print("{:<5}\t\t".format(FLAGS.file_type_name[i]), end="")
         print("")
         print("----------" * (FLAGS.num_of_file_types + 1))
 
         for i in range(FLAGS.num_of_file_types):
-            print("{:<5}\t | ".format(FLAGS.file_type_name[i]), end="")
+            print("{:<5} | ".format(FLAGS.file_type_name[i]), end="")
             for j in range(FLAGS.num_of_file_types):
                 print("{:2.2f}%\t\t".format(
                     accuracy_each_type[i][j] /
@@ -157,4 +158,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -14,4 +14,5 @@ L1 = layer("1", input_tensor=X, input_size=256, output_size=512, relu=True, drop
 L2 = layer("2", input_tensor=L1, input_size=512, output_size=256, relu=True, dropout=True, keep_prob=keep_prob)
 L3 = layer("3", input_tensor=L2, input_size=256, output_size=128, relu=True, dropout=True, keep_prob=keep_prob)
 L4 = layer("4", input_tensor=L3, input_size=128, output_size=32, relu=True, dropout=True, keep_prob=keep_prob)
-hypothesis = layer("5", input_tensor=L4, input_size=32, output_size=5, relu=False, dropout=False, keep_prob=keep_prob)
+hypothesis = layer("5", input_tensor=L4, input_size=32, output_size=FLAGS.num_of_file_types,
+                   relu=False, dropout=False, keep_prob=keep_prob)
