@@ -8,7 +8,7 @@ def print_accuracy_table(accuracy_table):
     """
 
     # print the head
-    print("{:<5} | ".format(" t\\p "), end="")
+    print("{:<5} | ".format("t \\ p"), end="")
     for i in range(FLAGS.num_of_groups):
         print("{:<5}\t\t".format(FLAGS.group_name[i]), end="")
     print("")

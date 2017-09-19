@@ -11,12 +11,12 @@ FLAGS = tf.app.flags.FLAGS
 # =================================
 
 # model name
-FLAGS.model_name = "5-layer-frequency-model"
+FLAGS.model_name = "cnn_test"
 
 # input directory
-FLAGS.train_data_path = "./train_data"
-FLAGS.validation_data_path = "./validation_data"
-FLAGS.test_data_path = "./test_data"
+FLAGS.train_data_path = "./TrainData/3_type_raw_frequency/train_data"
+FLAGS.validation_data_path = "./TrainData/3_type_raw_frequency/validation_data"
+FLAGS.test_data_path = "./TrainData/3_type_raw_frequency/test_data"
 
 # learning rate
 FLAGS.learning_rate = 1e-4

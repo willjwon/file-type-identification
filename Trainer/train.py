@@ -1,7 +1,11 @@
-from neural_net import *
+# from NeuralNet.frequency_simple_5_layer import *
 from read_data import *
 from output_function import *
+import importlib
 import os
+
+# neural_net = importlib.import_module("NeuralNet." + FLAGS.module_name)
+neural_net = importlib.import_module("NeuralNet." + FLAGS.model_name)
 
 
 def main():
@@ -16,15 +20,15 @@ def main():
     global_step = tf.Variable(0, trainable=False, name="global_step")
 
     # train results, like cost and accuracy.
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis, labels=Y))
-    classify_result = tf.argmax(hypothesis, 1)
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=neural_net.hypothesis, labels=neural_net.Y))
+    classify_result = tf.argmax(neural_net.hypothesis, 1)
 
     def count_value(result, value_to_count):
         return tf.reduce_sum(tf.cast(tf.equal(result, value_to_count), tf.int32))
 
     def file_type_and_accuracy(result):
-        file_type = tf.argmax(Y, 1)[0]
-        return file_type, tf.reduce_mean(tf.cast(tf.equal(result, tf.argmax(Y, 1)), tf.float32))
+        file_type = tf.argmax(neural_net.Y, 1)[0]
+        return file_type, tf.reduce_mean(tf.cast(tf.equal(result, tf.argmax(neural_net.Y, 1)), tf.float32))
 
     # trainer
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost, global_step=global_step)
@@ -66,7 +70,9 @@ def main():
             # train step
             train_value, train_file_type = sess.run([train_value_from_file, train_file_type_from_file])
             c, _, s = sess.run([cost, optimizer, summary],
-                               feed_dict={X: train_value, Y: train_file_type, keep_prob: FLAGS.keep_prob_train})
+                               feed_dict={neural_net.X: train_value,
+                                          neural_net.Y: train_file_type,
+                                          neural_net.keep_prob: FLAGS.keep_prob_train})
 
             if step % 100 == 0:
                 print("At step {:>5}, cost: {:2.9f}".format(step, c))
@@ -91,17 +97,17 @@ def main():
                     validation_value, validation_file_type \
                         = sess.run([validation_value_from_file, validation_file_type_from_file])
                     result = sess.run(classify_result,
-                                      feed_dict={X: validation_value, keep_prob: 1.0})
+                                      feed_dict={neural_net.X: validation_value, neural_net.keep_prob: 1.0})
 
                     validated_file_type, current_accuracy = sess.run(file_type_and_accuracy(result),
-                                                                     feed_dict={Y: validation_file_type})
+                                                                     feed_dict={neural_net.Y: validation_file_type})
                     average_accuracy += current_accuracy
 
                     for j in range(FLAGS.num_of_groups):
                         accuracy_table[validated_file_type][j] += sess.run(count_value(result, j),
-                                                                           feed_dict={Y: validation_file_type})
+                                                                           feed_dict={neural_net.Y: validation_file_type})
 
-                print("\r\nValidation Result Table:")
+                print("\rValidation Result Table:")
                 print_accuracy_table(accuracy_table)
                 print("Validation Accuracy: {:2.9f}%\n".format(average_accuracy / num_of_validation_files * 100))
 
@@ -118,16 +124,16 @@ def main():
             print_progress(i, num_of_test_files)
 
             test_byte_value, test_file_type = sess.run([test_value_from_file, test_file_type_from_file])
-            result = sess.run(classify_result, feed_dict={X: test_byte_value, keep_prob: 1.0})
+            result = sess.run(classify_result, feed_dict={neural_net.X: test_byte_value, neural_net.keep_prob: 1.0})
 
             tested_file_type, current_accuracy = sess.run(file_type_and_accuracy(result),
-                                                          feed_dict={Y: test_file_type})
+                                                          feed_dict={neural_net.Y: test_file_type})
             average_accuracy += current_accuracy
             for j in range(FLAGS.num_of_groups):
                 accuracy_table[tested_file_type][j] += sess.run(count_value(result, j),
-                                                                feed_dict={Y: test_file_type})
+                                                                feed_dict={neural_net.Y: test_file_type})
 
-        print("\r\nTest Result Table:")
+        print("\rTest Result Table:")
         print_accuracy_table(accuracy_table)
         print("Test Result: accuracy: {:2.9f}%\n".format(average_accuracy / num_of_test_files * 100))
 

@@ -27,14 +27,6 @@ FileFragmentGenerator/input/
 FileFragmentGenerator/output/
 
 # Data input and output
-ByteFrequencyBasedTraining/train_data/
-ByteFrequencyBasedTraining/validation_data/
-ByteFrequencyBasedTraining/test_data/
-ByteFrequencyBasedTraining/tensorboard/
-ByteFrequencyBasedTraining/model/
-
-CNNBasedTraining/train_data/
-CNNBasedTraining/validation_data/
-CNNBasedTraining/test_data/
-CNNBasedTraining/tensorboard/
-CNNBasedTraining/model/
+Trainer/TrainData/
+Trainer/model/
+Trainer/tensorboard/
