@@ -1,5 +1,6 @@
 from read_data import *
 from neural_net import *
+from output_function import *
 
 
 def main():
@@ -68,7 +69,7 @@ def main():
 
             # validation and save at checkpoint
             if step % FLAGS.checkpoint_steps == 0:
-                print("\nStep {:>5}: Checkpoint.".format(step))
+                print("\nStep {}: Checkpoint.".format(step))
                 # saving model
                 model_saved_path = saver.save(sess, model_save_path, global_step=step)
                 print("Model successfully saved at {}.\n".format(model_saved_path))
@@ -78,10 +79,9 @@ def main():
 
                 average_accuracy = 0.
                 accuracy_each_type = [[0] * FLAGS.num_of_file_types for _ in range(FLAGS.num_of_file_types)]
-                # for i in range(FLAGS.num_of_file_types):
-                #     accuracy_each_type.append([0] * FLAGS.num_of_file_types)
 
                 for i in range(1, num_of_validation_files + 1):
+                    print_progress(i, num_of_validation_files)
                     validation_byte_value, validation_file_type \
                         = sess.run([validation_batch_byte_value, validation_batch_file_type])
                     result = sess.run(classify_result,
@@ -94,22 +94,8 @@ def main():
                         accuracy_each_type[current_file_type][j] += sess.run(classify_count(result, j),
                                                                              feed_dict={Y: validation_file_type})
 
-                print("\nValidation Result Table:")
-                print("{:<5} | ".format("re\\ch"), end="")
-                for i in range(FLAGS.num_of_file_types):
-                    print("{:<5}\t\t".format(FLAGS.file_type_name[i]), end="")
-                print("")
-                print("----------" * (FLAGS.num_of_file_types + 1))
-                for i in range(FLAGS.num_of_file_types):
-                    print("{:<5} | ".format(FLAGS.file_type_name[i]), end="")
-                    for j in range(FLAGS.num_of_file_types):
-                        print("{:2.2f}%\t\t".format(
-                            accuracy_each_type[i][j] /
-                            (FLAGS.num_of_validation_files_per_type * FLAGS.num_of_fragments_per_csv)
-                            * 100),
-                            end="")
-                    print("")
-                print("----------" * (FLAGS.num_of_file_types + 1))
+                print("\rValidation Result Table:")
+                print_accuracy_table(accuracy_each_type)
                 print("Validation Accuracy: {:2.9f}%\n".format(average_accuracy / num_of_validation_files * 100))
 
             # add summary to tensorboard
@@ -124,6 +110,7 @@ def main():
         #     accuracy_each_type.append([0] * FLAGS.num_of_file_types)
 
         for i in range(1, num_of_test_files + 1):
+            print_progress(i, num_of_test_files)
             test_byte_value, test_file_type = sess.run([test_batch_byte_value, test_batch_file_type])
             result = sess.run(classify_result, feed_dict={X: test_byte_value, keep_prob: 1.0})
 
@@ -133,23 +120,8 @@ def main():
                 accuracy_each_type[current_file_type][j] += sess.run(classify_count(result, j),
                                                                      feed_dict={Y: test_file_type})
 
-        print("{:<5} | ".format("re\\ch"), end="")
-        for i in range(FLAGS.num_of_file_types):
-            print("{:<5}\t\t".format(FLAGS.file_type_name[i]), end="")
-        print("")
-        print("----------" * (FLAGS.num_of_file_types + 1))
-
-        for i in range(FLAGS.num_of_file_types):
-            print("{:<5} | ".format(FLAGS.file_type_name[i]), end="")
-            for j in range(FLAGS.num_of_file_types):
-                print("{:2.2f}%\t\t".format(
-                    accuracy_each_type[i][j] /
-                    (FLAGS.num_of_test_files_per_type * FLAGS.num_of_fragments_per_csv)
-                    * 100),
-                    end="")
-            print("")
-
-        print("----------" * (FLAGS.num_of_file_types + 1))
+        print("\rTest Result Table:")
+        print_accuracy_table(accuracy_each_type)
         print("Test Result: accuracy: {:2.9f}%\n".format(average_accuracy / num_of_test_files * 100))
 
         coord.request_stop()

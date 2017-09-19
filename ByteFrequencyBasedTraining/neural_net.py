@@ -1,5 +1,4 @@
 from layer import *
-from setup import *
 
 # input placeholders
 # x: byte value (0 ~ 255)

@@ -1,6 +1,5 @@
 from setup import *
 import os
-import tensorflow as tf
 import unittest
 
 

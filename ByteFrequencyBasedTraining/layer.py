@@ -1,4 +1,4 @@
-import tensorflow as tf
+from setup import *
 
 
 def layer(layer_num, input_tensor, input_size, output_size, relu, dropout, keep_prob):
