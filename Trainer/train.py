@@ -1,10 +1,7 @@
-# from NeuralNet.frequency_simple_5_layer import *
 from read_data import *
 from output_function import *
 import importlib
 import os
-
-# neural_net = importlib.import_module("NeuralNet." + FLAGS.module_name)
 neural_net = importlib.import_module("NeuralNet." + FLAGS.model_name)
 
 
