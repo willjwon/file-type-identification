@@ -6,6 +6,7 @@
 #define FILEFRAGMENTGENERATOR_PREPROCESS_HPP
 
 #include <cmath>
+#include <iostream>
 
 namespace baryberri {
     void preprocess(int* const& gramArray, double* const preprocessedArray, int arrayLength);
@@ -37,7 +38,7 @@ void baryberri::preprocess(int* const& gramArray, double* const preprocessedArra
     // 2. Normalize and apply Mu-law
     double normalized_frequency = 0;
     for (int i = 0; i < arrayLength; i++) {
-        normalized_frequency = gramArray[i] / max_frequency;
+        normalized_frequency = (double)gramArray[i] / max_frequency;
         preprocessedArray[i] = log(1 + 256 * normalized_frequency) / log(1 + 256);
     }
 
