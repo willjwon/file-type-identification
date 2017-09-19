@@ -4,7 +4,7 @@ from setup import *
 def simple_layer(layer_num, input_tensor, input_size, output_size, relu, dropout, keep_prob):
     with tf.variable_scope("layer" + layer_num):
         weight = tf.get_variable(shape=[input_size, output_size],
-                                 initializer=tf.contrib.layers.xavier_initializer(),
+                                 initializer=tf.contrib.keras.initializers.he_normal(),
                                  name="W" + layer_num)
         bias = tf.Variable(tf.random_normal([output_size]), name="b" + layer_num)
 
