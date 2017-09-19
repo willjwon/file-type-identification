@@ -16,7 +16,7 @@ FLAGS.validation_data_path = "./validation_data"
 FLAGS.test_data_path = "./test_data"
 
 # directory for tensorboard summary
-FLAGS.tensorboard_directory = './tensorboard/train1'
+FLAGS.tensorboard_output_directory = './tensorboard/train1'
 
 # model's output directory
 FLAGS.model_output_directory = "./model"
@@ -38,10 +38,12 @@ FLAGS.batch_size = 100
 
 # csv information
 FLAGS.num_of_fragments_per_csv = 100
+
+# file information
 FLAGS.num_of_validation_files_per_type = 50
 FLAGS.num_of_test_files_per_type = 100
 
 # type information
-FLAGS.num_of_file_types = 3
-FLAGS.file_type_name = ["hwp", "jpg", "mp3"]
+FLAGS.num_of_groups = 3
+FLAGS.group_name = ["hwp", "jpg", "mp3"]
 # =================================

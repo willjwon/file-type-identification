@@ -9,20 +9,20 @@ def print_accuracy_table(accuracy_table):
 
     # print the head
     print("{:<5} | ".format(" t\\p "), end="")
-    for i in range(FLAGS.num_of_file_types):
-        print("{:<5}\t\t".format(FLAGS.file_type_name[i]), end="")
+    for i in range(FLAGS.num_of_groups):
+        print("{:<5}\t\t".format(FLAGS.group_name[i]), end="")
     print("")
-    print("----------" * (FLAGS.num_of_file_types + 1))
+    print("----------" * (FLAGS.num_of_groups + 1))
 
     # print the data
-    for i in range(FLAGS.num_of_file_types):
-        print("{:<5} | ".format(FLAGS.file_type_name[i]), end="")
-        for j in range(FLAGS.num_of_file_types):
+    for i in range(FLAGS.num_of_groups):
+        print("{:<5} | ".format(FLAGS.group_name[i]), end="")
+        for j in range(FLAGS.num_of_groups):
             file_accuracy = \
                 accuracy_table[i][j] / (FLAGS.num_of_test_files_per_type * FLAGS.num_of_fragments_per_csv) * 100
             print("{:2.2f}%\t\t".format(file_accuracy), end="")
         print("")
-    print("----------" * (FLAGS.num_of_file_types + 1))
+    print("----------" * (FLAGS.num_of_groups + 1))
 
 
 def print_progress(current_level, max_level, bar_size=50):

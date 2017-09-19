@@ -31,7 +31,7 @@ def main():
 
     # tensorboard summary
     summary = tf.summary.merge_all()
-    writer = tf.summary.FileWriter(FLAGS.tensorboard_directory)
+    writer = tf.summary.FileWriter(FLAGS.tensorboard_output_directory)
 
     # model save path
     if not FLAGS.model_output_directory.endswith("/"):
@@ -78,7 +78,7 @@ def main():
                 print("Validating. Please wait...".format(step))
 
                 average_accuracy = 0.
-                accuracy_each_type = [[0] * FLAGS.num_of_file_types for _ in range(FLAGS.num_of_file_types)]
+                accuracy_each_type = [[0] * FLAGS.num_of_groups for _ in range(FLAGS.num_of_groups)]
 
                 for i in range(1, num_of_validation_files + 1):
                     print_progress(i, num_of_validation_files)
@@ -90,7 +90,7 @@ def main():
                     current_file_type, current_accuracy = sess.run(accuracy(result), feed_dict={Y: validation_file_type})
                     average_accuracy += current_accuracy
 
-                    for j in range(FLAGS.num_of_file_types):
+                    for j in range(FLAGS.num_of_groups):
                         accuracy_each_type[current_file_type][j] += sess.run(classify_count(result, j),
                                                                              feed_dict={Y: validation_file_type})
 
@@ -105,9 +105,9 @@ def main():
         print("Testing. Please wait...\n")
 
         average_accuracy = 0.
-        accuracy_each_type = [[0] * FLAGS.num_of_file_types for _ in range(FLAGS.num_of_file_types)]
-        # for i in range(FLAGS.num_of_file_types):
-        #     accuracy_each_type.append([0] * FLAGS.num_of_file_types)
+        accuracy_each_type = [[0] * FLAGS.num_of_groups for _ in range(FLAGS.num_of_groups)]
+        # for i in range(FLAGS.num_of_groups):
+        #     accuracy_each_type.append([0] * FLAGS.num_of_groups)
 
         for i in range(1, num_of_test_files + 1):
             print_progress(i, num_of_test_files)
@@ -116,7 +116,7 @@ def main():
 
             current_file_type, current_accuracy = sess.run(accuracy(result), feed_dict={Y: test_file_type})
             average_accuracy += current_accuracy
-            for j in range(FLAGS.num_of_file_types):
+            for j in range(FLAGS.num_of_groups):
                 accuracy_each_type[current_file_type][j] += sess.run(classify_count(result, j),
                                                                      feed_dict={Y: test_file_type})
 
