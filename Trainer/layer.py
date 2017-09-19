@@ -35,7 +35,7 @@ def reshape_layer(layer_num, input_tensor, shape):
 def cnn_layer(layer_num, input_tensor, filter_size, channel_size, relu, pool_size):
     with tf.variable_scope("layer" + layer_num):
         weight = tf.get_variable(shape=[filter_size[0], filter_size[0], channel_size[0], channel_size[1]],
-                                 initializer=tf.contrib.layers.xavier_initializer(),
+                                 initializer=tf.contrib.keras.initializers.he_normal(),
                                  name="W" + layer_num)
         bias = tf.Variable(tf.random_normal([channel_size[1]]),
                            name="b" + layer_num)
