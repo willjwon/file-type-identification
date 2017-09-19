@@ -1,10 +1,11 @@
 from setup import *
 
 
-def print_accuracy_table(accuracy_table):
+def print_accuracy_table(accuracy_table, test_type):
     """
     prints 2d accuracy table to the console
     :param accuracy_table: 2d accuracy table to print
+    :param test_type: "validation" or "test"
     """
 
     # print the head
@@ -18,8 +19,14 @@ def print_accuracy_table(accuracy_table):
     for i in range(FLAGS.num_of_groups):
         print("{:<5} | ".format(FLAGS.group_name[i]), end="")
         for j in range(FLAGS.num_of_groups):
-            file_accuracy = \
-                accuracy_table[i][j] / (FLAGS.num_of_test_files_per_type * FLAGS.num_of_fragments_per_csv) * 100
+            if test_type.lower() == "validation":
+                file_accuracy = \
+                    accuracy_table[i][j] \
+                    / (FLAGS.num_of_validation_files_per_type * FLAGS.num_of_fragments_per_csv) * 100
+            else:
+                file_accuracy = \
+                    accuracy_table[i][j] / (FLAGS.num_of_test_files_per_type * FLAGS.num_of_fragments_per_csv) * 100
+
             print("{:2.2f}%\t\t".format(file_accuracy), end="")
         print("")
     print("----------" * (FLAGS.num_of_groups + 1))

@@ -105,7 +105,7 @@ def main():
                                                                            feed_dict={neural_net.Y: validation_file_type})
 
                 print("\rValidation Result Table:")
-                print_accuracy_table(accuracy_table)
+                print_accuracy_table(accuracy_table, test_type="validation")
                 print("Validation Accuracy: {:2.9f}%\n".format(average_accuracy / num_of_validation_files * 100))
 
             # add summary to tensorboard
@@ -131,7 +131,7 @@ def main():
                                                                 feed_dict={neural_net.Y: test_file_type})
 
         print("\rTest Result Table:")
-        print_accuracy_table(accuracy_table)
+        print_accuracy_table(accuracy_table, test_type="test")
         print("Test Result: accuracy: {:2.9f}%\n".format(average_accuracy / num_of_test_files * 100))
 
         # stop the session
