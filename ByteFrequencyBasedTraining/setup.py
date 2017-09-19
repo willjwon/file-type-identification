@@ -10,16 +10,13 @@ FLAGS = tf.app.flags.FLAGS
 # DEFINE CONSTANTS HERE!
 # =================================
 
+# model name
+FLAGS.model_name = "5-layer-frequency-model"
+
 # input directory
 FLAGS.train_data_path = "./train_data"
 FLAGS.validation_data_path = "./validation_data"
 FLAGS.test_data_path = "./test_data"
-
-# directory for tensorboard summary
-FLAGS.tensorboard_output_directory = './tensorboard/train1'
-
-# model's output directory
-FLAGS.model_output_directory = "./model"
 
 # learning rate
 FLAGS.learning_rate = 1e-4

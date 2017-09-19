@@ -1,43 +1,47 @@
-from read_data import *
 from neural_net import *
+from read_data import *
 from output_function import *
+import os
 
 
 def main():
-    train_queue, validation_queue, test_queue = make_files_queue()
-    train_batch_byte_value, train_batch_file_type = next_train_batch(FLAGS.batch_size, train_queue)
-    validation_batch_byte_value, validation_batch_file_type = get_data_set(validation_queue)
-    test_batch_byte_value, test_batch_file_type = get_data_set(test_queue)
+    # data for train
+    train_file_queue, validation_file_queue, test_file_queue = make_files_queue()
+    train_value_from_file, train_file_type_from_file = next_train_batch(FLAGS.batch_size, train_file_queue)
+    validation_value_from_file, validation_file_type_from_file = get_data_set(validation_file_queue)
+    test_value_from_file, test_file_type_from_file = get_data_set(test_file_queue)
     _, num_of_validation_files, num_of_test_files = get_num_of_data_files()
 
     # global step for train
     global_step = tf.Variable(0, trainable=False, name="global_step")
 
+    # train results, like cost and accuracy.
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis, labels=Y))
-
     classify_result = tf.argmax(hypothesis, 1)
 
-    def classify_count(tensor, value):
-        return tf.reduce_sum(tf.cast(tf.equal(tensor, value), tf.int32))
+    def count_value(result, value_to_count):
+        return tf.reduce_sum(tf.cast(tf.equal(result, value_to_count), tf.int32))
 
-    def accuracy(result):
+    def file_type_and_accuracy(result):
         file_type = tf.argmax(Y, 1)[0]
         return file_type, tf.reduce_mean(tf.cast(tf.equal(result, tf.argmax(Y, 1)), tf.float32))
 
+    # trainer
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost, global_step=global_step)
-    tf.summary.scalar(name="cost", tensor=cost)
 
+    # saver
     saver = tf.train.Saver(max_to_keep=3)
+    model_output_directory = "./model/" + FLAGS.model_name
+    if not os.path.exists(model_output_directory):
+        os.makedirs(model_output_directory)
+    model_save_path = model_output_directory + "/model.ckpt"
 
     # tensorboard summary
+    tf.summary.scalar(name="cost", tensor=cost)
     summary = tf.summary.merge_all()
-    writer = tf.summary.FileWriter(FLAGS.tensorboard_output_directory)
+    writer = tf.summary.FileWriter("./tensorboard/" + FLAGS.model_name)
 
-    # model save path
-    if not FLAGS.model_output_directory.endswith("/"):
-        FLAGS.model_output_directory += "/"
-    model_save_path = FLAGS.model_output_directory + "model.ckpt"
-
+    # session
     with tf.Session() as sess:
         writer.add_graph(sess.graph)
 
@@ -46,7 +50,7 @@ def main():
         threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
         # restore the data
-        latest_checkpoint = tf.train.latest_checkpoint(FLAGS.model_output_directory)
+        latest_checkpoint = tf.train.latest_checkpoint(model_output_directory)
         if latest_checkpoint is not None:
             saver.restore(sess, latest_checkpoint)
             current_step = sess.run(global_step)
@@ -60,9 +64,9 @@ def main():
         # train the model
         for step in range(current_step, FLAGS.num_of_total_global_steps + 1):
             # train step
-            batch_byte_value, batch_file_type = sess.run([train_batch_byte_value, train_batch_file_type])
+            train_value, train_file_type = sess.run([train_value_from_file, train_file_type_from_file])
             c, _, s = sess.run([cost, optimizer, summary],
-                               feed_dict={X: batch_byte_value, Y: batch_file_type, keep_prob: FLAGS.keep_prob_train})
+                               feed_dict={X: train_value, Y: train_file_type, keep_prob: FLAGS.keep_prob_train})
 
             if step % 100 == 0:
                 print("At step {:>5}, cost: {:2.9f}".format(step, c))
@@ -70,7 +74,8 @@ def main():
             # validation and save at checkpoint
             if step % FLAGS.checkpoint_steps == 0:
                 print("\nStep {}: Checkpoint.".format(step))
-                # saving model
+
+                # save the model
                 model_saved_path = saver.save(sess, model_save_path, global_step=step)
                 print("Model successfully saved at {}.\n".format(model_saved_path))
 
@@ -78,52 +83,55 @@ def main():
                 print("Validating. Please wait...".format(step))
 
                 average_accuracy = 0.
-                accuracy_each_type = [[0] * FLAGS.num_of_groups for _ in range(FLAGS.num_of_groups)]
+                accuracy_table = [[0] * FLAGS.num_of_groups for _ in range(FLAGS.num_of_groups)]
 
                 for i in range(1, num_of_validation_files + 1):
                     print_progress(i, num_of_validation_files)
-                    validation_byte_value, validation_file_type \
-                        = sess.run([validation_batch_byte_value, validation_batch_file_type])
-                    result = sess.run(classify_result,
-                                      feed_dict={X: validation_byte_value, keep_prob: 1.0})
 
-                    current_file_type, current_accuracy = sess.run(accuracy(result), feed_dict={Y: validation_file_type})
+                    validation_value, validation_file_type \
+                        = sess.run([validation_value_from_file, validation_file_type_from_file])
+                    result = sess.run(classify_result,
+                                      feed_dict={X: validation_value, keep_prob: 1.0})
+
+                    validated_file_type, current_accuracy = sess.run(file_type_and_accuracy(result),
+                                                                     feed_dict={Y: validation_file_type})
                     average_accuracy += current_accuracy
 
                     for j in range(FLAGS.num_of_groups):
-                        accuracy_each_type[current_file_type][j] += sess.run(classify_count(result, j),
-                                                                             feed_dict={Y: validation_file_type})
+                        accuracy_table[validated_file_type][j] += sess.run(count_value(result, j),
+                                                                           feed_dict={Y: validation_file_type})
 
-                print("\rValidation Result Table:")
-                print_accuracy_table(accuracy_each_type)
+                print("\r\nValidation Result Table:")
+                print_accuracy_table(accuracy_table)
                 print("Validation Accuracy: {:2.9f}%\n".format(average_accuracy / num_of_validation_files * 100))
 
             # add summary to tensorboard
             writer.add_summary(s, global_step=step)
 
-        # test the model
+        # train ended. test the model.
         print("Testing. Please wait...\n")
 
         average_accuracy = 0.
-        accuracy_each_type = [[0] * FLAGS.num_of_groups for _ in range(FLAGS.num_of_groups)]
-        # for i in range(FLAGS.num_of_groups):
-        #     accuracy_each_type.append([0] * FLAGS.num_of_groups)
+        accuracy_table = [[0] * FLAGS.num_of_groups for _ in range(FLAGS.num_of_groups)]
 
         for i in range(1, num_of_test_files + 1):
             print_progress(i, num_of_test_files)
-            test_byte_value, test_file_type = sess.run([test_batch_byte_value, test_batch_file_type])
+
+            test_byte_value, test_file_type = sess.run([test_value_from_file, test_file_type_from_file])
             result = sess.run(classify_result, feed_dict={X: test_byte_value, keep_prob: 1.0})
 
-            current_file_type, current_accuracy = sess.run(accuracy(result), feed_dict={Y: test_file_type})
+            tested_file_type, current_accuracy = sess.run(file_type_and_accuracy(result),
+                                                          feed_dict={Y: test_file_type})
             average_accuracy += current_accuracy
             for j in range(FLAGS.num_of_groups):
-                accuracy_each_type[current_file_type][j] += sess.run(classify_count(result, j),
-                                                                     feed_dict={Y: test_file_type})
+                accuracy_table[tested_file_type][j] += sess.run(count_value(result, j),
+                                                                feed_dict={Y: test_file_type})
 
-        print("\rTest Result Table:")
-        print_accuracy_table(accuracy_each_type)
+        print("\r\nTest Result Table:")
+        print_accuracy_table(accuracy_table)
         print("Test Result: accuracy: {:2.9f}%\n".format(average_accuracy / num_of_test_files * 100))
 
+        # stop the session
         coord.request_stop()
         coord.join(threads)
 
