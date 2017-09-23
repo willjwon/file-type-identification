@@ -1,6 +1,5 @@
 from setup import *
 import os
-import tensorflow as tf
 import unittest
 
 
@@ -62,7 +61,7 @@ def read_a_csv(files_queue):
         _, read_value = reader.read(files_queue)
 
         # Decoder
-        record_defaults = [[0.]] * 259
+        record_defaults = [[0.]] * (256 + FLAGS.num_of_groups)
         return tf.decode_csv(read_value, record_defaults=record_defaults)
 
     except:
