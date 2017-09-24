@@ -8,7 +8,26 @@ from scrapy.spiders import CrawlSpider
 class FileScraper(CrawlSpider):
     name = "file-scraper"
 
-    start_urls = ["http://cse.snu.ac.kr"]
+    start_urls = ["http://www.snu.ac.kr",
+                  "http://www.kaist.ac.kr",
+                  "http://www.postech.ac.kr",
+                  "https://www.hanyang.ac.kr",
+                  "https://www.yonsei.ac.kr",
+                  "http://www.yonhapnews.co.kr",
+                  "http://joongang.joins.com",
+                  "http://www.hani.co.kr",
+                  "http://www.hani.co.kr",
+                  "http://www.bc-sangdo.ms.kr",
+                  "http://www.seokwoo.ms.kr",
+                  "http://www.gbs.hs.kr",
+                  "https://www.skku.edu"
+                  "http://www.stanford.edu",
+                  "http://www.berkeley.edu",
+                  "http://www.ucla.edu",
+                  "http://www.caltech.edu",
+                  "http://www.mit.edu"]
+
+    # allowed_domains = ["snu.ac.kr", "kaist.ac.kr", "postech.ac.kr"]
 
     files_to_download = (".hwp", ".pdf", ".docx", ".xlsx", ".exe", ".mp3")
     images_to_download = (".jpg", ".png", ".gif")
@@ -57,7 +76,6 @@ class FileScraper(CrawlSpider):
 
             # download files
             if file_link.endswith(self.files_to_download):
-                print("File To Download:", file_link)
                 yield {"file_urls": [file_link]}
             else:
                 yield scrapy.Request(file_link, callback=self.parse)
