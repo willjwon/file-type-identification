@@ -75,6 +75,8 @@ class FileScraper(CrawlSpider):
                     html_file.write(response.body)
             except FileNotFoundError:
                 os.makedirs("./html/")
+        else:
+            return  # similar page: don't crawl any more.
 
         # download images
         image_links = list(set(response.xpath("//img/@src").extract()))  # list(set()) to remove duplicate links
