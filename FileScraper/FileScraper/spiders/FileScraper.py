@@ -27,7 +27,24 @@ class FileScraper(CrawlSpider):
                   "http://www.caltech.edu",
                   "http://www.mit.edu"]
 
-    # allowed_domains = ["snu.ac.kr", "kaist.ac.kr", "postech.ac.kr"]
+    allowed_domains = ["snu.ac.kr",
+                       "kaist.ac.kr",
+                       "postech.ac.kr",
+                       "hanyang.ac.kr",
+                       "yonsei.ac.kr",
+                       "yonhapnews.co.kr",
+                       "joongang.joins.com",
+                       "hani.co.kr",
+                       "hani.co.kr",
+                       "bc-sangdo.ms.kr",
+                       "seokwoo.ms.kr",
+                       "gbs.hs.kr",
+                       "skku.edu "
+                       "stanford.edu",
+                       "berkeley.edu",
+                       "ucla.edu",
+                       "caltech.edu",
+                       "mit.edu"]
 
     files_to_download = (".hwp", ".pdf", ".docx", ".xlsx", ".exe", ".mp3")
     images_to_download = (".jpg", ".png", ".gif")
