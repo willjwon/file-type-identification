@@ -63,10 +63,10 @@ class FileScraper(CrawlSpider):
             url_hash_seed = html_name
         else:
             try:
-                url_hash_seed = html_name_split[0] + html_name_split[1] + html_name_split[3][:3]
+                url_hash_seed = html_name_split[0] + html_name_split[1] + html_name_split[2][:5]
             except IndexError:
                 # html_name_split has less than 5 characters. use the base seed.
-                url_hash_seed = html_name_split[0] + html_name_split[1]
+                url_hash_seed = html_name_split[0] + html_name_split[1] + html_name_split[2]
 
         if not self.hash_checker.duplicated(url_hash_seed):
             html_save_link = "./html/" + html_name + ".html"
