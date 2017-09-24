@@ -1,3 +1,4 @@
+import os
 import scrapy
 from urllib.parse import urljoin
 from scrapy.spiders import CrawlSpider
@@ -6,8 +7,8 @@ from scrapy.spiders import CrawlSpider
 class FileScraper(CrawlSpider):
     name = "file-scraper"
 
-    start_urls = ["http://cse.snu.ac.kr"]
-    allowed_domains = ["cse.snu.ac.kr"]
+    start_urls = ["http://admission.kaist.ac.kr/undergraduate/"]
+    allowed_domains = ["admission.kaist.ac.kr"]
 
     files_to_download = (".hwp", ".pdf", ".docx", ".xlsx", ".exe", ".mp3")
     images_to_download = (".jpg", ".png", ".gif")
@@ -21,9 +22,11 @@ class FileScraper(CrawlSpider):
         html_save_link = "./html/" + \
                          response.url.strip().split("//")[1].replace("/", "#") + \
                          ".html"
-
-        with open(html_save_link, "wb") as html_file:
-            html_file.write(response.body)
+        try:
+            with open(html_save_link, "wb") as html_file:
+                html_file.write(response.body)
+        except FileNotFoundError:
+            os.makedirs("./html/")
 
         # download images
         image_links = list(set(response.xpath("//img/@src").extract()))  # list(set()) to remove duplicate links
