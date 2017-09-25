@@ -11,12 +11,12 @@ FLAGS = tf.app.flags.FLAGS
 # =================================
 
 # model name
-FLAGS.model_name = "cnn_test"
+FLAGS.model_name = "frequency_simple_7_layer"
 
 # input directory
-FLAGS.train_data_path = "./TrainData/3_type_raw_frequency/train_data"
-FLAGS.validation_data_path = "./TrainData/3_type_raw_frequency/validation_data"
-FLAGS.test_data_path = "./TrainData/3_type_raw_frequency/test_data"
+FLAGS.train_data_path = "./TrainData/preprocessed-frequency-data/train_data"
+FLAGS.validation_data_path = "./TrainData/preprocessed-frequency-data/validation_data"
+FLAGS.test_data_path = "./TrainData/preprocessed-frequency-data/test_data"
 
 # learning rate
 FLAGS.learning_rate = 1e-4
@@ -25,7 +25,7 @@ FLAGS.learning_rate = 1e-4
 FLAGS.keep_prob_train = 0.5
 
 # global steps to repeat
-FLAGS.num_of_total_global_steps = 10000
+FLAGS.num_of_total_global_steps = 1
 
 # checkpoint steps to save and validate
 FLAGS.checkpoint_steps = 1000

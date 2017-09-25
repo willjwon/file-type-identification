@@ -14,14 +14,14 @@ BOT_NAME = "FileScraper"
 SPIDER_MODULES = ["FileScraper.spiders"]
 NEWSPIDER_MODULE = "FileScraper.spiders"
 
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 ITEM_PIPELINES = {
     "scrapy.pipelines.files.FilesPipeline": 300,
     "scrapy.pipelines.images.ImagesPipeline": 300
 }
-FILES_STORE = "./files"
-IMAGES_STORE = "./images"
+FILES_STORE = "./DOWNLOADED_FILES"
+IMAGES_STORE = "./DOWNLOADED_IMAGES"
 
 IMAGES_MIN_HEIGHT = 150
 IMAGES_MIN_WIDTH = 150

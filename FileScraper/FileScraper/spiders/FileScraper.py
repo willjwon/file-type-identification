@@ -8,46 +8,10 @@ from scrapy.spiders import CrawlSpider
 class FileScraper(CrawlSpider):
     name = "file-scraper"
 
-    start_urls = ["http://www.snu.ac.kr",
-                  "http://www.kaist.ac.kr",
-                  "http://www.postech.ac.kr",
-                  "https://www.hanyang.ac.kr",
-                  "https://www.yonsei.ac.kr",
-                  "http://www.yonhapnews.co.kr",
-                  "http://joongang.joins.com",
-                  "http://www.hani.co.kr",
-                  "http://www.hani.co.kr",
-                  "http://www.bc-sangdo.ms.kr",
-                  "http://www.seokwoo.ms.kr",
-                  "http://www.gbs.hs.kr",
-                  "https://www.skku.edu"
-                  "http://www.stanford.edu",
-                  "http://www.berkeley.edu",
-                  "http://www.ucla.edu",
-                  "http://www.caltech.edu",
-                  "http://www.mit.edu"]
+    start_urls = ["http://cse.snu.ac.kr"]
+    allowed_domains = ["cse.snu.ac.kr"]
 
-    allowed_domains = ["snu.ac.kr",
-                       "kaist.ac.kr",
-                       "postech.ac.kr",
-                       "hanyang.ac.kr",
-                       "yonsei.ac.kr",
-                       "yonhapnews.co.kr",
-                       "joongang.joins.com",
-                       "hani.co.kr",
-                       "hani.co.kr",
-                       "bc-sangdo.ms.kr",
-                       "seokwoo.ms.kr",
-                       "gbs.hs.kr",
-                       "skku.edu "
-                       "stanford.edu",
-                       "berkeley.edu",
-                       "ucla.edu",
-                       "caltech.edu",
-                       "mit.edu"]
-
-    files_to_download = (".hwp", ".pdf", ".docx", ".xlsx", ".exe", ".mp3")
-    images_to_download = (".jpg", ".png", ".gif")
+    files_to_download = (".hwp", ".docx")
 
     hash_checker = HashChecker()
 
@@ -69,16 +33,16 @@ class FileScraper(CrawlSpider):
                 url_hash_seed = html_name_split[0] + html_name_split[1] + html_name_split[2]
 
         if not self.hash_checker.duplicated(url_hash_seed):
-            html_save_link = "./html/" + html_name + ".html"
+            html_save_link = "./DOWNLOADED_HTML/" + html_name + ".html"
             try:
                 with open(html_save_link, "wb") as html_file:
                     html_file.write(response.body)
             except FileNotFoundError:
-                os.makedirs("./html/")
-        else:
-            return  # similar page: don't crawl any more.
+                os.makedirs("./DOWNLOADED_HTML/")
+       else:
+           return  # similar page: don't crawl any more.
 
-        # download images
+        download images
         image_links = list(set(response.xpath("//img/@src").extract()))  # list(set()) to remove duplicate links
         for i in range(len(image_links)):
             if not image_links[i].startswith("http"):
