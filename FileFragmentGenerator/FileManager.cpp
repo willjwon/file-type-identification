@@ -207,7 +207,7 @@ const std::string baryberri::FileManager::getNextFilePath() {
         if (currentFile == nullptr) {
             return "";
         }
-    } while (!has_suffix(currentFile->d_name, "." + currentFileType));
+    } while (!has_suffix(currentFile->d_name, currentFileType));
 
     std::string path = currentInputDirectoryPath;
     if (!has_suffix(currentInputDirectoryPath, "/")) {
