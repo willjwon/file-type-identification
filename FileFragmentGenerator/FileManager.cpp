@@ -195,7 +195,6 @@ void baryberri::FileManager::setToNextFile() {
     }
     currentFileOffset = baseOffset;
     inputFileStream.open(inputFilePath);
-    std::cout << inputFilePath << std::endl;
 }
 
 const std::string baryberri::FileManager::getNextFilePath() {
