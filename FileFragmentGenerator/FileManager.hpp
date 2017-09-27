@@ -154,6 +154,12 @@ private:
     /// \return true if given str has given suffix, otherwise false.
     static const bool has_suffix(const std::string& str, const std::string& suffix);
 
+    /// checks whether given string has a given prefix.
+    /// \param str string to test whether it has given prefix or not
+    /// \param prefix  prefix string to test
+    /// \return true if given string has given prefix, otherwise false.
+    static const bool has_prefix(const std::string& str, const std::string& prefix);
+
     /// change current output stream into next output stream.
     static void changeToNextOutputFile();
 };

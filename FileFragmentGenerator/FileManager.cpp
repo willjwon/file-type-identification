@@ -302,8 +302,13 @@ void baryberri::FileManager::reloadInputStream() {
 }
 
 const bool baryberri::FileManager::has_suffix(const std::string& str, const std::string& suffix) {
-    return str.size() >= suffix.size()
-            && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+    return str.size() >= suffix.size() &&
+           str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
+const bool baryberri::FileManager::has_prefix(const std::string& str, const std::string& prefix) {
+    return str.size() >= prefix.size() &&
+           str.substr(0, prefix.size()) == prefix;
 }
 
 void baryberri::FileManager::changeToNextOutputFile() {
