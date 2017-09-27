@@ -195,6 +195,7 @@ void baryberri::FileManager::setToNextFile() {
     }
     currentFileOffset = baseOffset;
     inputFileStream.open(inputFilePath);
+    std::cout << inputFilePath << std::endl;
 }
 
 const std::string baryberri::FileManager::getNextFilePath() {
@@ -207,7 +208,7 @@ const std::string baryberri::FileManager::getNextFilePath() {
         if (currentFile == nullptr) {
             return "";
         }
-    } while (!has_suffix(currentFile->d_name, ".") && !has_suffix(currentFile->d_name, currentFileType));
+    } while ( has_prefix(currentFile->d_name, ".") || (!has_suffix(currentFile->d_name, currentFileType)) );
 
     std::string path = currentInputDirectoryPath;
     if (!has_suffix(currentInputDirectoryPath, "/")) {
