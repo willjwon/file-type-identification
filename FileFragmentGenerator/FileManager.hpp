@@ -145,6 +145,9 @@ private:
     /// set offset to next available offset.
     void setToNextOffset();
 
+    /// reset the start offset.
+    void resetOffset();
+
     /// open an input stream to read.
     void reloadInputStream();
 

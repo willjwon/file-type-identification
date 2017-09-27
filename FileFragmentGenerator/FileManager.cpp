@@ -117,6 +117,7 @@ const bool baryberri::FileManager::setToNextType() {
     }
 
     setToNextFile();
+    resetOffset();
 
     return true;
 }
@@ -292,6 +293,13 @@ void baryberri::FileManager::setToNextOffset() {
         denominator *= 2;
     }
 }
+
+void baryberri::FileManager::resetOffset() {
+    numerator = 1;
+    denominator = 2;
+}
+
+
 void baryberri::FileManager::reloadInputStream() {
     if (inputFileStream.is_open()) {
         inputFileStream.close();
