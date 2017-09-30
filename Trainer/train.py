@@ -71,7 +71,7 @@ def main():
                                           neural_net.Y: train_file_type,
                                           neural_net.keep_prob: FLAGS.keep_prob_train})
 
-            if step % 100 == 0:
+            if step % FLAGS.cost_print_step == 0:
                 print("At step {:>5}, cost: {:2.9f}".format(step, c))
 
             # validation and save at checkpoint
