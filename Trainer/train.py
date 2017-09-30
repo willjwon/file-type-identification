@@ -32,7 +32,7 @@ def main():
 
     # saver
     saver = tf.train.Saver(max_to_keep=3)
-    model_output_directory = "./model/" + FLAGS.model_name
+    model_output_directory = "./SavedModel/" + FLAGS.model_name
     if not os.path.exists(model_output_directory):
         os.makedirs(model_output_directory)
     model_save_path = model_output_directory + "/model.ckpt"
@@ -40,7 +40,7 @@ def main():
     # tensorboard summary
     tf.summary.scalar(name="cost", tensor=cost)
     summary = tf.summary.merge_all()
-    writer = tf.summary.FileWriter("./tensorboard/" + FLAGS.model_name)
+    writer = tf.summary.FileWriter("./Tensorboard/" + FLAGS.model_name)
 
     # session
     with tf.Session() as sess:
