@@ -15,17 +15,18 @@ namespace baryberri {
 
 void baryberri::preprocess(int* const& gramArray, double* const preprocessedArray, int arrayLength) {
     // No Preprocessing: output the same value
-//    for (int i = 0; i < arrayLength; i++) {
-//        preprocessedArray[i] = gramArray[i];
-//    }
+    for (int i = 0; i < arrayLength; i++) {
+        preprocessedArray[i] = gramArray[i];
+    }
 
-    // Example: Division by 4kb(i.e. Getting Proportion)
     /*
+    // Example: Division by 4kb(i.e. Getting Proportion)
     for (int i = 0; i < arrayLength; i++) {
         preprocessedArray[i] = gramArray[i] / 4096.0;
     }
      */
 
+    /*
     // Companding by Mu-Law
     // 1. Finding the most frequent byte value
     int max_frequency = 1;
@@ -41,7 +42,7 @@ void baryberri::preprocess(int* const& gramArray, double* const preprocessedArra
         normalized_frequency = (double)gramArray[i] / max_frequency;
         preprocessedArray[i] = log(1 + 256 * normalized_frequency) / log(1 + 256);
     }
-
+     */
 }
 
 #endif //FILEFRAGMENTGENERATOR_PREPROCESS_HPP
