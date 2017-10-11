@@ -1,28 +1,36 @@
 {
-    "fileType": ["hwp", "jpg", "mp3"],
+    "fileType": ["html", "", "mp3", "hwp", "pdf", "jpg", "png"],
 
     "inputDirectory": {
-        "hwp": "./input/hwp_train",
-        "jpg": "./input/jpg_train",
-        "mp3": "./input/mp3_train"
+        "html": "/Users/barber/Development/GitHub/data/train_data/html",
+        "": "/Users/barber/Development/GitHub/data/train_data/exe",
+        "mp3": "/Users/barber/Development/GitHub/data/train_data/mp3",
+        "hwp": "/Users/barber/Development/GitHub/data/train_data/hwp",
+        "pdf": "/Users/barber/Development/GitHub/data/train_data/pdf",
+        "jpg": "/Users/barber/Development/GitHub/data/train_data/jpg",
+        "png": "/Users/barber/Development/GitHub/data/train_data/png"
     },
 
     "typeKey": {
-        "hwp": 0,
-        "jpg": 1,
-        "mp3": 2
+        "html": 0,
+        "": 1,
+        "mp3": 2,
+        "hwp": 3,
+        "pdf": 4,
+        "jpg": 5,
+        "png": 6
     },
 
-    "numOfGroups": 3,
+    "numOfGroups": 7,
 
-    "outputDirectory": "./train_data",
-    "outputFileName": "hwp_jpg_mp3_frequency_train_",
+    "outputDirectory": "/Users/barber/Development/GitHub/output/1g-nogroup-train",
+    "outputFileName": "train_",
     "shuffleOutput": true,
 
     "settings": {
         "gram": 1,
         "fragmentSize": 4096,
-        "totalFragmentsPerType": 35000,
+        "totalFragmentsPerType": 350000,
         "fragmentsPerCSV": 100
     }
 }
