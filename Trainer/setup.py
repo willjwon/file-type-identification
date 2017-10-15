@@ -11,12 +11,12 @@ FLAGS = tf.app.flags.FLAGS
 # =================================
 
 # model name
-FLAGS.model_name = "cnn_test"
+FLAGS.model_name = "frequency_symmetric_10_layer"
 
 # input directory
-FLAGS.train_data_path = "./TrainData/3_type_raw_frequency/train_data"
-FLAGS.validation_data_path = "./TrainData/3_type_raw_frequency/validation_data"
-FLAGS.test_data_path = "./TrainData/3_type_raw_frequency/test_data"
+FLAGS.train_data_path = "./TrainData/1g-nogroup-train"
+FLAGS.validation_data_path = "./TrainData/1g-nogroup-validation"
+FLAGS.test_data_path = "./TrainData/1g-nogroup-test"
 
 # learning rate
 FLAGS.learning_rate = 1e-4
@@ -25,10 +25,10 @@ FLAGS.learning_rate = 1e-4
 FLAGS.keep_prob_train = 0.5
 
 # global steps to repeat
-FLAGS.num_of_total_global_steps = 10000
+FLAGS.num_of_total_global_steps = 40000
 
 # checkpoint steps to save and validate
-FLAGS.checkpoint_steps = 1000
+FLAGS.checkpoint_steps = 2000
 
 # a mini batch's size
 FLAGS.batch_size = 100
@@ -41,6 +41,6 @@ FLAGS.num_of_validation_files_per_type = 50
 FLAGS.num_of_test_files_per_type = 100
 
 # type information
-FLAGS.num_of_groups = 3
-FLAGS.group_name = ["hwp", "jpg", "mp3"]
+FLAGS.num_of_groups = 7
+FLAGS.group_name = ["html", "exe", "mp3", "hwp", "pdf", "jpg", "png"]
 # =================================
