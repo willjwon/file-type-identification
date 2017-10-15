@@ -51,16 +51,6 @@ public:
     /// \param settings json settings to set
     static void setSettings(json* settings);
 
-//    /// get currentFileType.
-//    ///
-//    /// \return currentFileType
-//    const std::string getCurrentFileType();
-//
-//    /// get numOfFileTypes;
-//    ///
-//    /// \return numOfFileTypes;
-//    static const int getNumOfFileTypes();
-
 private:
     /// settings has "fileType": ["html", "hwp", "pdf", "docx", "xlsx"] field.
     /// currentFileType indicates currently selected file type.
@@ -95,14 +85,21 @@ private:
     /// input file's path
     std::string inputFilePath;
 
+    /// numerator and denominator of the base offset.
+    int numerator;
+    int denominator;
+
     /// indicates the current file.
     struct dirent* currentFile;
 
     /// save settings.json
     static json* settings;
 
-    /// get how many file types exist.
+    /// number of total file types
     static int numOfFileTypes;
+
+    /// number of groups of file types
+    static int numOfGroups;
 
     /// save current output stream's path.
     static std::string outputBasePath;
@@ -143,10 +140,13 @@ private:
     void computeNgram(char* const& fragmentArray, int* gramArray);
 
     /// save n-gram data into csv file.
-    void saveGramData(int* const& gramArray);
+    void saveGramData(double* const& gramArray);
 
     /// set offset to next available offset.
     void setToNextOffset();
+
+    /// reset the start offset.
+    void resetOffset();
 
     /// open an input stream to read.
     void reloadInputStream();
@@ -156,6 +156,12 @@ private:
     /// \param suffix suffix string to test
     /// \return true if given str has given suffix, otherwise false.
     static const bool has_suffix(const std::string& str, const std::string& suffix);
+
+    /// checks whether given string has a given prefix.
+    /// \param str string to test whether it has given prefix or not
+    /// \param prefix  prefix string to test
+    /// \return true if given string has given prefix, otherwise false.
+    static const bool has_prefix(const std::string& str, const std::string& prefix);
 
     /// change current output stream into next output stream.
     static void changeToNextOutputFile();
