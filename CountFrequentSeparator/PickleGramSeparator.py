@@ -12,7 +12,7 @@ directory_path = {
 }
 
 file_size_in_bytes = 4096
-max_process_size_in_bytes = 100 * 1024 * 1024  # 100 MB
+max_process_size_in_bytes = 10 * 1024 * 1024  # 100 MB
 
 
 def compute_gram_frequency(gram, limit):
