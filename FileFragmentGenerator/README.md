@@ -42,7 +42,7 @@
     *  `inputDirectory`: `fileType`에 지정된 type들의 파일들이 어떤 폴더에 위치하고 있는지를 기록합니다.
 	`./`는 `settings.json` 파일이 위치한 폴더를 의미합니다.
     * `typeKey`: 각 `fileType`은 one-hot encoding을 통해 구분됩니다. 각 type의 몇 번째 bit가 1이 될 것인지 설정하시면 됩니다. **0부터 시작해서 순차적으로** 설정해주세요.
-    * `outputDirectory`: 결과 csv가 기록될 위치를 지정합니다. 존재하지 않는 csv 파일 및 한 층의 폴더는 만들어주지만, 2개 이상의 폴더는 자동으로 만들어주지 않으니 주의해주시기 바랍니다. 또한, 프로그램을 재실행하면 덮어쓰기 모드로 실행되니, 폴더 내에 csv가 없도록 주의해주세요.
+    * `outputDirectory`: 결과 csv가 기록될 위치를 지정합니다. 존재하지 않는 csv 파일 및 한 층의 폴더는 만들어주지만, 2개 이상의 폴더는 자동으로 만들어주지 않으니 주의해주시기 바랍니다. 또한, 프로그램을 재실행하면 덮어쓰기 모드로 실행되니, 폴더 내에 csv가 없도록 주의해주세요.
     * `outputFileName`: csv가 가질 fileName을 지정합니다. fileName 뒤에 연속적인 숫자가 자동으로 붙어 csv가 만들어집니다. 예를 들어, 이 field가 `frequency_`로 설정된 경우 `frequency_1.csv`의 csv 파일이 출력됩니다.
     * `settings`: 다음의 세 가지 설정을 지정합니다.
 		* `gram`: 어떤 n-gram을 사용할 것인지를 지정합니다.
