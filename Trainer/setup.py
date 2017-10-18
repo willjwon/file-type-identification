@@ -28,7 +28,7 @@ FLAGS.keep_prob_train = 0.7
 FLAGS.num_of_total_global_steps = 30000
 
 # checkpoint steps to save and validate
-FLAGS.checkpoint_steps = 1000
+FLAGS.checkpoint_steps = 2000
 
 # steps to print cost
 FLAGS.cost_print_step = 100
