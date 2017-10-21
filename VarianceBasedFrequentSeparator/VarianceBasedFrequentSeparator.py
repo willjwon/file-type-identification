@@ -1,11 +1,8 @@
 import pickle
 import settings
-from heapq import heappush, heappop
-from collections import OrderedDict
-from operator import itemgetter
 from File import File
 from ComputeGramData import compute_gram_variance, count_gram_frequency
-from CapacityHeap import CapacityHeap
+from LimitedContainer import LimitedContainer
 from PrintProgress import print_progress
 
 
@@ -35,7 +32,7 @@ def main():
     print_progress(num_fragments_done, num_total_fragments)
 
     print("\n\nComputing Variances...")
-    variance_result = CapacityHeap(settings.num_separators_to_save, lambda x, y: x[1] > y[1])
+    variance_result = LimitedContainer(settings.num_separators_to_save, lambda x, y: x[1] > y[1])
     num_total_grams = len(grams_introduced)
     num_processing_done = 0
     for gram_key in grams_introduced:
