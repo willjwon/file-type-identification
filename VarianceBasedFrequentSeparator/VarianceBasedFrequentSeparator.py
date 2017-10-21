@@ -1,9 +1,11 @@
 import pickle
 import settings
+from heapq import heappush, heappop
 from collections import OrderedDict
 from operator import itemgetter
 from File import File
 from ComputeGramData import compute_gram_variance, count_gram_frequency
+from CapacityHeap import CapacityHeap
 from PrintProgress import print_progress
 
 
@@ -33,23 +35,21 @@ def main():
     print_progress(num_fragments_done, num_total_fragments)
 
     print("\n\nComputing Variances...")
-    variance_result = dict()
+    variance_result = CapacityHeap(settings.num_separators_to_save, lambda x, y: x[1] > y[1])
     num_total_grams = len(grams_introduced)
     num_processing_done = 0
     for gram_key in grams_introduced:
         variance = compute_gram_variance(gram_key, gram_frequency[gram_key[0] - 1])
-        variance_result[gram_key] = variance
+        variance_result.push((gram_key, variance))
         num_processing_done += 1
         print_progress(num_processing_done, num_total_grams)
     print_progress(num_processing_done, num_total_grams)
 
-    # sorting the variance result
-    ordered_variance = OrderedDict(sorted(variance_result.items(), key=itemgetter(1), reverse=True))
-
     # pick the topmost and print the result
     print("\n\nSorting and saving...")
     result_gram_values = [[] for _ in range(settings.max_grams)]
-    for gram_size, gram_value in list(ordered_variance.keys())[:settings.num_separators_to_save]:
+    for _ in range(settings.num_separators_to_save):
+        gram_size, gram_value = variance_result.pop()[0]
         result_gram_values[gram_size - 1].append(gram_value)
 
     for gram in range(settings.max_grams):

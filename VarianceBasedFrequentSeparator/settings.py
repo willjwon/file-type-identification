@@ -7,7 +7,7 @@ directory_path = {
 }
 
 fragment_size_in_bytes = 4096
-num_fragments = 1000 
+num_fragments = 3000
 
 max_grams = 5
 num_separators_to_save = 4096
