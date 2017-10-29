@@ -18,6 +18,8 @@ def main():
     if not output_path.endswith("/"):
         output_path += "/"
 
+    CountGramData.load_frequent_separators()
+
     # Make train fragments
 
     # 1. Read files for each type for train data
@@ -33,9 +35,6 @@ def main():
         make_directory(train_output_path)
         train_output_file_base_name = train_output_path + "train_data_"
         output_file = open(train_output_file_base_name + str(train_file_index) + ".csv", "w")
-
-        # 3. Generate train output file
-        CountGramData.load_frequent_separators()
 
         num_fragments_in_csv = 0
         print("Generating Train Data...")
