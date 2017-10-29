@@ -7,7 +7,9 @@ directory_path = {
 }
 
 fragment_size_in_bytes = 4096
-num_fragments = 100
+num_fragments = 10
 
-max_grams = 2
+start_gram = 2
+finish_gram = 3
+
 false_negative_level_to_pick = 0.15
