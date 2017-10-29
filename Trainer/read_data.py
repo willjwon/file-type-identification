@@ -61,7 +61,7 @@ def read_a_csv(files_queue):
         _, read_value = reader.read(files_queue)
 
         # Decoder
-        record_defaults = [[0.]] * (256 + FLAGS.num_of_groups)
+        record_defaults = [[0.]] * (298 + FLAGS.num_of_groups)
         return tf.decode_csv(read_value, record_defaults=record_defaults)
 
     except:
@@ -77,8 +77,8 @@ def get_batch(batch_size: int, files_queue):
     :return: batcn tensor read from csv
     """
     input_data = read_a_csv(files_queue)
-    frequency_value = input_data[:256]
-    file_type_in_one_hot = input_data[256:]
+    frequency_value = input_data[:298]
+    file_type_in_one_hot = input_data[298:]
 
     return tf.train.batch([frequency_value, file_type_in_one_hot], batch_size=batch_size)
 
