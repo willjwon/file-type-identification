@@ -2,6 +2,7 @@ import os
 import pickle
 import operator
 
+
 def main():
     frequent_separator_result = dict()
 
@@ -24,14 +25,16 @@ def main():
             else:
                 if len(separator) < len(frequent_separator_result[gram]):
                     frequent_separator_result[gram] = separator
+                print("Gram {} is duplicated. Tighter one is used at merging.".format(gram))
+
+    frequent_separator_result = dict(sorted(frequent_separator_result.items(), key=operator.itemgetter(0)))
 
     # check the merged separator is correct
-    grams = list(sorted(frequent_separator_result.keys()))
+    grams = list(frequent_separator_result.keys())
     missed_grams = []
     for i in range(len(grams) - 1):
         if grams[i + 1] - grams[i] != 1:
             missed_grams.append(grams[i] + 1)
-
 
     if len(missed_grams) != 0:
         if len(missed_grams) == 1:
@@ -48,7 +51,6 @@ def main():
 
     print("Saving Merged Separator...")
 
-    frequent_separator_result = dict(sorted(frequent_separator_result.items(), key=operator.itemgetter(0)))
     with open("./frequent_separators.pickle", "wb") as file:
         pickle.dump(frequent_separator_result, file, protocol=pickle.HIGHEST_PROTOCOL)
     print("Merged separator saved at './frequent_separators.pickle'.")
