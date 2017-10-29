@@ -60,7 +60,6 @@ def main():
                 file.write("{},".format(hex(gram)[2:].upper()))
 
     print("Separator information has been saved at './separators_information.csv'.")
-    print(frequent_separator_result)
 
 if __name__ == "__main__":
     main()
