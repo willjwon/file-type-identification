@@ -1,6 +1,5 @@
 import unittest
 import pickle
-import settings
 import os
 
 
