@@ -1,5 +1,6 @@
 import unittest
 import pickle
+import settings
 
 
 def generate_one_hot_group_csv_string(group_index, num_groups):
@@ -18,16 +19,14 @@ class CountGramData:
 
     @classmethod
     def count_gram_data_and_get_result_csv_string(cls, data):
-        count_result = [0] * 256
-        for index in range(len(data)):
-            count_result[int.from_bytes(data[index:(index + 1)], byteorder="big")] += 1
+        count_result = []
 
         # count 2 ~ 5 gram.
-        for gram in range(4):
+        for gram in range(settings.max_grams):
             partial_count_result = [0] * len(cls.frequent_separators[gram])
             for index in range(len(data) - gram + 1):
-                # Computes 2 gram when gram = 0, therefore should use gram + 2 for actual gram size
-                gram_value = int.from_bytes(data[index:(index + (gram + 2))], byteorder="big")
+                # Computes 1 gram when gram = 0, therefore should use gram + 1 for actual gram size
+                gram_value = int.from_bytes(data[index:(index + (gram + 1))], byteorder="big")
                 if gram_value in cls.frequent_separators[gram]:
                     partial_count_result[cls.frequent_separators[gram][gram_value]] += 1
             count_result += partial_count_result
