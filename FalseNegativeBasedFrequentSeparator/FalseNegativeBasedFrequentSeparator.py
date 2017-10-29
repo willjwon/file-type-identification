@@ -64,7 +64,7 @@ def main():
     variance_saved = copy.deepcopy(variance_result)
 
     # pick the topmost and print the result
-    print("\n\nSorting and saving...")
+    print("\n\nSaving...")
     result_gram_values = [[] for _ in range(settings.max_grams)]
 
     for i in range(len(variance_result)):
@@ -74,11 +74,12 @@ def main():
     for gram in range(settings.max_grams):
         result_gram_values[gram] = list(sorted(result_gram_values[gram]))
 
-    result = [dict() for _ in range(settings.max_grams)]
+    result = dict()
     for gram in range(settings.max_grams):
+        result[gram + 1] = dict()
         for i in range(len(result_gram_values[gram])):
             gram_value = result_gram_values[gram][i]
-            result[gram][gram_value] = i
+            result[gram + 1][gram_value] = i
 
     with open("./frequent_separators.pickle", "wb") as file:
         pickle.dump(result, file)
@@ -88,16 +89,16 @@ def main():
     print("\n\nSaving Separator Information...")
     with open("./separators_information.csv", "w") as file:
         # saving gram keys
-        for i in range(len(result)):
-            for gram in result[i].keys():
+        for i in range(settings.max_grams):
+            for gram in result[i + 1].keys():
                 file.write("{},".format(hex(gram)[2:].upper()))
         for file_type in settings.directory_path.keys():
             file.write("{},".format(file_type))
         file.write("\n")
 
         # saving false negative rates
-        for i in range(len(result)):
-            for gram in result[i].keys():
+        for i in range(settings.max_grams):
+            for gram in result[i + 1].keys():
                 variance = list(filter(lambda x: x[0] == (i + 1, gram), variance_saved))[0][1]
                 file.write("{:2.6f},".format(variance))
 
@@ -109,6 +110,8 @@ def main():
     print("\n\nSelection Result:")
     for gram in range(settings.max_grams):
         print("\t- At {}-gram, {} separators are selected.".format(gram + 1, len(result_gram_values[gram])))
+
+    print(result)
 
 
 if __name__ == "__main__":

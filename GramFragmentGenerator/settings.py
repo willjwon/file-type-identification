@@ -32,9 +32,9 @@ file_types = {
     "png": 4
 }
 num_groups = 5
-max_grams = 3 
 
 fragment_size_in_bytes = 4096
+
 num_train_fragments_per_type = 100 
 num_validation_fragments_per_type = 0
 num_test_fragments_per_type = 0
