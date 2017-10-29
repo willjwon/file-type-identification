@@ -115,8 +115,6 @@ def main():
         print("\t- At {}-gram, {} separators are selected."
               .format(gram + settings.start_gram, len(result_gram_values[gram])))
 
-    print(result)
-
 
 if __name__ == "__main__":
     main()
