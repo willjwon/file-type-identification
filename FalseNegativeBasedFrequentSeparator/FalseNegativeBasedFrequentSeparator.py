@@ -1,9 +1,9 @@
 import pickle
 import settings
 import os
+import copy
 from File import File
 from ComputeGramData import compute_gram_variance, count_gram_frequency
-from LimitedContainer import LimitedContainer
 from PrintProgress import print_progress
 
 
@@ -44,29 +44,31 @@ def main():
 
         print_progress(num_fragments_done, num_total_fragments)
 
-        print("\n\nSaving Count Information...")
-        with open("saved_count_data.pickle", "wb") as file:
-            save_data = [grams_introduced, gram_frequency]
-            pickle.dump(save_data, file)
-        print("Successfully saved at './saved_count_data.pickle'.")
+#        print("\n\nSaving Count Information...")
+#        with open("saved_count_data.pickle", "wb") as file:
+#            save_data = [grams_introduced, gram_frequency]
+#            pickle.dump(save_data, file, protocol=pickle.HIGHEST_PROTOCOL)
+#        print("Successfully saved at './saved_count_data.pickle'.")
 
     print("\n\nComputing Scores...")
-    variance_result = LimitedContainer(settings.num_separators_to_save, lambda x, y: x[1] < y[1])
+    variance_result = []
     num_total_grams = len(grams_introduced)
     num_processing_done = 0
     for gram_key in grams_introduced:
         variance = compute_gram_variance(gram_key, gram_frequency[gram_key[0] - 1])
-        variance_result.push((gram_key, variance))
+        if variance <= settings.false_negative_level_to_pick:
+            variance_result.append((gram_key, variance))
         num_processing_done += 1
         print_progress(num_processing_done, num_total_grams)
     print_progress(num_processing_done, num_total_grams)
+    variance_saved = copy.deepcopy(variance_result)
 
     # pick the topmost and print the result
     print("\n\nSorting and saving...")
     result_gram_values = [[] for _ in range(settings.max_grams)]
 
-    for _ in range(settings.num_separators_to_save):
-        gram_size, gram_value = variance_result.pop()[0]
+    for i in range(len(variance_result)):
+        gram_size, gram_value = variance_result[i][0]
         result_gram_values[gram_size - 1].append(gram_value)
 
     for gram in range(settings.max_grams):
@@ -85,9 +87,20 @@ def main():
 
     print("\n\nSaving Separator Information...")
     with open("./separators_information.csv", "w") as file:
-        for grams in result:
-            for gram in grams.keys():
+        # saving gram keys
+        for i in range(len(result)):
+            for gram in result[i].keys():
                 file.write("{},".format(hex(gram)[2:].upper()))
+        for file_type in settings.directory_path.keys():
+            file.write("{},".format(file_type))
+        file.write("\n")
+
+        # saving false negative rates
+        for i in range(len(result)):
+            for gram in result[i].keys():
+                variance = list(filter(lambda x: x[0] == (i + 1, gram), variance_saved))[0][1]
+                file.write("{:2.6f},".format(variance))
+
         for file_type in settings.directory_path.keys():
             file.write("{},".format(file_type))
 
