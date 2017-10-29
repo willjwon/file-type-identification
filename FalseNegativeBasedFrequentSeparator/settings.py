@@ -1,9 +1,9 @@
 directory_path = {
-    "mp3": "/Users/barber/Data/Research/File-type-identification/scraped-data/test_data/mp3",
-    "hwp": "/Users/barber/Data/Research/File-type-identification/scraped-data/test_data/hwp",
-    "pdf": "/Users/barber/Data/Research/File-type-identification/scraped-data/test_data/pdf",
-    "jpg": "/Users/barber/Data/Research/File-type-identification/scraped-data/test_data/jpg",
-    "png": "/Users/barber/Data/Research/File-type-identification/scraped-data/test_data/png"
+    "mp3": "/Users/barber/Data/Research/File-type-identification/scraped-data/train_data/mp3",
+    "hwp": "/Users/barber/Data/Research/File-type-identification/scraped-data/train_data/hwp",
+    "pdf": "/Users/barber/Data/Research/File-type-identification/scraped-data/train_data/pdf",
+    "jpg": "/Users/barber/Data/Research/File-type-identification/scraped-data/train_data/jpg",
+    "png": "/Users/barber/Data/Research/File-type-identification/scraped-data/train_data/png"
 }
 
 fragment_size_in_bytes = 4096
