@@ -3,7 +3,7 @@ from layer import *
 # input placeholders
 # x: byte value (0 ~ 255)
 # y: 5 file types in one hot encoding
-X = tf.placeholder(tf.float32, [None, 663])
+X = tf.placeholder(tf.float32, [None, FLAGS.input_dimension])
 Y = tf.placeholder(tf.float32, [None, FLAGS.num_of_groups])
 
 # keep probability placeholder for dropout
@@ -11,7 +11,7 @@ keep_prob = tf.placeholder(tf.float32)
 
 # List that contains size of each layer.
 # size[i]: output_size of i-th layer
-size = [663, 1024, 2048, 1024, 512, 256, 128, 32, FLAGS.num_of_groups]
+size = [FLAGS.input_dimension, 1024, 2048, 1024, 512, 256, 128, 32, FLAGS.num_of_groups]
 
 # Layers
 L1 = simple_layer("1", input_tensor=X, input_size=size[0], output_size=size[1], relu=True, dropout=True, keep_prob=keep_prob)
