@@ -7,9 +7,24 @@ directory_path = {
 }
 
 fragment_size_in_bytes = 4096
-num_fragments = 10
+num_fragments = 6000
 
-start_gram = 2
-finish_gram = 3
+start_gram = 1
+finish_gram = 1
 
-false_negative_level_to_pick = 0.15
+false_positive_level_to_pick = 0.5
+false_negative_level_to_pick = 0.17
+
+# -------- 2-gram -------
+# fp
+# 0.5   0.45    0.4     0.35    0.3
+# 305   89      22      2       2
+
+# fn
+# 0.18    0.17    0.16    0.15    0.14    0.13
+# 1236    283     77      21      8       4
+
+# fp   fn       #sep #added
+# 0.45 0.17  => 291 (+8)
+# 0.5  0.17  => 378 (+95)
+# ----------------------
