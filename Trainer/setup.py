@@ -11,21 +11,21 @@ FLAGS = tf.app.flags.FLAGS
 # =================================
 
 # model name
-FLAGS.model_name = "simple_cnn"
+FLAGS.model_name = "frequency_symmetric_8_layer_3gram_17_without_dropout"
 
 # input directory
-FLAGS.train_data_path = "/Users/barber/Development/GitHub/file-type-identification/Trainer/TrainData/7type-3group-raw-frequency-data/train_data"
-FLAGS.validation_data_path = "/Users/barber/Development/GitHub/file-type-identification/Trainer/TrainData/7type-3group-raw-frequency-data/validation_data"
-FLAGS.test_data_path = "/Users/barber/Development/GitHub/file-type-identification/Trainer/TrainData/7type-3group-raw-frequency-data/test_data"
+FLAGS.train_data_path = "/Users/kyang/Documents/GitHub/file-type-identification/Trainer/TrainData/3gram_0.17/train_data"
+FLAGS.validation_data_path = "/Users/kyang/Documents/GitHub/file-type-identification/Trainer/TrainData/3gram_0.17/validation_data"
+FLAGS.test_data_path = "/Users/kyang/Documents/GitHub/file-type-identification/Trainer/TrainData/3gram_0.17/test_data"
 
-# learning rate
+# ln earning rate
 FLAGS.learning_rate = 1e-5
 
 # keep probability for dropout while training
-FLAGS.keep_prob_train = 0.7
+FLAGS.keep_prob_train = 0.5
 
 # global steps to repeat
-FLAGS.num_of_total_global_steps = 30000
+FLAGS.num_of_total_global_steps = 20000
 
 # checkpoint steps to save and validate
 FLAGS.checkpoint_steps = 2000
@@ -40,11 +40,11 @@ FLAGS.batch_size = 100
 FLAGS.num_of_fragments_per_csv = 100
 
 # file information
-FLAGS.num_of_validation_files_per_type = 50
-FLAGS.num_of_test_files_per_type = 250
+FLAGS.num_of_validation_files_per_type = 2000
+FLAGS.num_of_test_files_per_type = 4000
 
 # type information
-FLAGS.num_of_groups = 3
-FLAGS.group_name = ["html", "exe", "else"]
-FLAGS.num_of_types_per_group = [1, 1, 5]
+FLAGS.num_of_groups = 7
+FLAGS.group_name = ["html", "exe", "mp3", "hwp", "pdf", "jpg", "png"]
+FLAGS.num_of_types_per_group = [1, 1, 1, 1, 1, 1, 1]
 # =================================

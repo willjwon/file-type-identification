@@ -23,11 +23,11 @@ def print_accuracy_table(accuracy_table, test_type):
                 file_accuracy = \
                     accuracy_table[i][j] \
                     / (FLAGS.num_of_validation_files_per_type * FLAGS.num_of_fragments_per_csv *
-                       FLAGS.num_of_types_per_group[i]) * 100
+                       FLAGS.num_of_types_per_group[i]) * FLAGS.batch_size * 100
             else:
                 file_accuracy = \
                     accuracy_table[i][j] / (FLAGS.num_of_test_files_per_type * FLAGS.num_of_fragments_per_csv *
-                                            FLAGS.num_of_types_per_group[i]) * 100
+                                            FLAGS.num_of_types_per_group[i]) * FLAGS.batch_size * 100
 
             print("{:2.2f}%\t\t".format(file_accuracy), end="")
         print("")
