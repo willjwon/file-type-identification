@@ -57,9 +57,9 @@ def main():
     num_total_grams = len(grams_introduced)
     num_processing_done = 0
     for gram_key in grams_introduced:
-        fp, fn = compute_gram_variance(gram_key, gram_frequency[gram_key[0] - settings.start_gram])
-        if fp <= settings.false_positive_level_to_pick and fn <= settings.false_negative_level_to_pick:
-            variance_result.append((gram_key, fp, fn))
+        fn = compute_gram_variance(gram_key, gram_frequency[gram_key[0] - settings.start_gram])
+        if fn <= settings.false_negative_level_to_pick:
+            variance_result.append((gram_key, fn))
         num_processing_done += 1
         print_progress(num_processing_done, num_total_grams)
     print_progress(num_processing_done, num_total_grams)
@@ -105,20 +105,10 @@ def main():
             file.write("{},".format(file_type))
         file.write("\n")
 
-        # saving false positive rates
-        for i in range(len_grams):
-            for gram in result[i + settings.start_gram].keys():
-                variance = list(filter(lambda x: x[0] == (i + settings.start_gram, gram), variance_saved))[0][1]
-                file.write("{:2.6f},".format(variance))
-
-        for file_type in settings.directory_path.keys():
-            file.write("{},".format(file_type))
-        file.write("\n")
-
         # saving false negative rates
         for i in range(len_grams):
             for gram in result[i + settings.start_gram].keys():
-                variance = list(filter(lambda x: x[0] == (i + settings.start_gram, gram), variance_saved))[0][2]
+                variance = list(filter(lambda x: x[0] == (i + settings.start_gram, gram), variance_saved))[0][1]
                 file.write("{:2.6f},".format(variance))
 
         for file_type in settings.directory_path.keys():
