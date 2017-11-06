@@ -10,8 +10,11 @@ def main():
     num_file_types = len(settings.file_path)
 
     for gram in range(settings.start_gram, settings.end_gram + 1):
+        print("At {}-gram:".format(gram))
         for file_index in range(num_file_types):
+            print("Counting file-index {}...".format(file_index))
             count_frequency(count_result, gram, file_index, num_file_types)
+            print()
         reduce_to_max(count_result, gram)
 
     count_result = pick_top_grams(count_result)
@@ -25,6 +28,13 @@ def main():
     for gram in range(settings.start_gram, settings.end_gram + 1):
         print("\t- At {}-gram, {} separators are selected.".format(gram, len(result[gram])))
 
+    print("Saving separators information...")
+    with open("./separators_information.csv", "w") as file:
+        for selected_grams in result.values():
+            file.write(','.join(hex(i)[2:].upper() for i in selected_grams.keys()))
+
+    print("Separator information has been saved at './separators_information.csv'.")
+
 
 def count_frequency(count_result, gram_size, file_index, num_file_types):
 
@@ -33,11 +43,17 @@ def count_frequency(count_result, gram_size, file_index, num_file_types):
     if not file_path.endswith("/"):
         file_path += "/"
 
+    fragments_done = 0
     for file_name in os.listdir(file_path):
-        if file_name.startswith(".") or "." not in file_name:
+        break_flag = False
+        if file_name.startswith("."):
+            continue
+
+        if "exe" not in file_path and '.' not in file_name:
             continue
 
         with open(file_path + file_name, "rb") as file:
+
             data = file.read(settings.fragment_size_in_byte)
             while len(data) == settings.fragment_size_in_byte:
                 for index in range(settings.fragment_size_in_byte - gram_size + 1):
@@ -48,7 +64,20 @@ def count_frequency(count_result, gram_size, file_index, num_file_types):
                     else:
                         count_result[gram_key] = [0] * num_file_types
                         count_result[gram_key][file_index] += 1
+                fragments_done += 1
+
+                if fragments_done % 100 == 0:
+                    print("{} fragments processed...".format(fragments_done))
+
+                if fragments_done >= settings.num_fragments_to_compute_per_type:
+                    break_flag = True
+                    break
+
                 data = file.read(settings.fragment_size_in_byte)
+
+            if break_flag:
+                break
+
 
 
 def reduce_to_max(count_result, gram_size):
