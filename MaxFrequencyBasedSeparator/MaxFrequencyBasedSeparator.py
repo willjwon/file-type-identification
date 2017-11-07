@@ -15,7 +15,14 @@ def main():
             print("Counting file-index {}...".format(file_index))
             count_frequency(count_result, gram, file_index, num_file_types)
             print()
-        reduce_to_max(count_result, gram)
+        reduce_to_max(count_result)
+        largest_index = pick_top_grams(count_result)
+
+        result = dict()
+        for key in largest_index:
+            result[key] = count_result[key]
+            del count_result[key]
+        count_result = result
 
     count_result = pick_top_grams(count_result)
 
@@ -66,7 +73,7 @@ def count_frequency(count_result, gram_size, file_index, num_file_types):
                         count_result[gram_key][file_index] += 1
                 fragments_done += 1
 
-                if fragments_done % 100 == 0:
+                if fragments_done % 1000 == 0:
                     print("{} fragments processed...".format(fragments_done))
 
                 if fragments_done >= settings.num_fragments_to_compute_per_type:
@@ -79,8 +86,7 @@ def count_frequency(count_result, gram_size, file_index, num_file_types):
                 break
 
 
-
-def reduce_to_max(count_result, gram_size):
+def reduce_to_max(count_result):
     for key, freq in count_result.items():
         count_result[key] = np.max(freq)
 

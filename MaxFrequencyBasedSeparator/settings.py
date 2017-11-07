@@ -17,9 +17,9 @@ file_path = [
 ]
 
 start_gram = 1
-end_gram = 2
+end_gram = 4
 
 fragment_size_in_byte = 4096
 num_fragments_to_compute_per_type = 300
 
-num_grams_to_pick = 10
+num_grams_to_pick = 20
