@@ -9,7 +9,7 @@ def main():
     count_result = dict()
     num_file_types = len(settings.file_path)
 
-    for gram in range(settings.start_gram, settings.end_gram + 1):
+    for gram in range(settings.end_gram, settings.start_gram - 1, -1):
         print("At {}-gram:".format(gram))
         for file_index in range(num_file_types):
             print("Counting file-index {}...".format(file_index))
