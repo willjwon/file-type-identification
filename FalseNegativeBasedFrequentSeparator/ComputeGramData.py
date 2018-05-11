@@ -30,14 +30,8 @@ def compute_gram_variance(gram_key, gram_frequency_data_by_types):
     num_sum_fragments = numpy.sum(data)
     num_max_fragments = numpy.max(data)
     num_total_fragments = settings.num_fragments * len(settings.directory_path)
-    try:
-        fp = (num_sum_fragments - num_max_fragments) / num_sum_fragments
-    except ZeroDivisionError:
-        fp = 1
 
     try:
-        fn = (settings.num_fragments - num_max_fragments) / (num_total_fragments - num_sum_fragments)
+        return (settings.num_fragments - num_max_fragments) / (num_total_fragments - num_sum_fragments)
     except ZeroDivisionError:
-        fn = 1
-
-    return fp, fn
+        return 1
