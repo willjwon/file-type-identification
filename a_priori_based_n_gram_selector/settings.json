@@ -1,0 +1,14 @@
+{
+  "directory": "/Users/barber/Data/test",
+
+  "fragment": {
+    "size": 4096
+  },
+
+
+  "pruning": {
+    "threshold": 0.5,
+    "max_gram_length": -1,
+    "num_separators_to_pick": 512
+  }
+}

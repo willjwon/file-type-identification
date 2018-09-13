@@ -1,0 +1,50 @@
+{
+  "data": {
+    "train": {
+      "0": "/Users/barber/Data/data/train/hwp/",
+      "1": "/Users/barber/Data/data/train/pdf/",
+      "2": "/Users/barber/Data/data/train/jpg/",
+      "3": "/Users/barber/Data/data/train/png/",
+      "4": "/Users/barber/Data/data/train/html/",
+      "5": "/Users/barber/Data/data/train/exe/"
+    },
+    "validation": {
+      "0": "/Users/barber/Data/data/validation/hwp/",
+      "1": "/Users/barber/Data/data/validation/pdf/",
+      "2": "/Users/barber/Data/data/validation/jpg/",
+      "3": "/Users/barber/Data/data/validation/png/",
+      "4": "/Users/barber/Data/data/validation/html/",
+      "5": "/Users/barber/Data/data/validation/exe/"
+    },
+    "test": {
+      "0": "/Users/barber/Data/data/test/hwp/",
+      "1": "/Users/barber/Data/data/test/hwp/",
+      "2": "/Users/barber/Data/data/test/hwp/",
+      "3": "/Users/barber/Data/data/test/hwp/",
+      "4": "/Users/barber/Data/data/test/hwp/",
+      "5": "/Users/barber/Data/data/test/hwp/"
+    }
+  },
+
+  "csv": {
+    "directory": {
+      "train": "./result/train/",
+      "validation": "./result/validation/",
+      "test": "./result/test/"
+    },
+    "filename": {
+      "train": "train_{}.csv",
+      "validation": "validation_{}.csv",
+      "test": "test_{}.csv"
+    },
+    "num_fragments": 100
+  },
+
+  "fragments": {
+    "num_validation_fragments_per_type": 1200,
+    "num_test_fragments_per_type": 12000
+  },
+
+  "fragment_size": 4096,
+  "separator": "./separators.pickle"
+}
