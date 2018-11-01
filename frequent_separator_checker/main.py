@@ -74,6 +74,17 @@ def main():
     while fragment is not None:
         separator_filter.count_fragment(fragment=fragment, file_type=file_type)
         fragment, file_type = fragment_getter.get_fragment()
+    filtered_separators = separator_filter.filter_grams(threshold=0.5)
+
+    with open("./filtered_separators.pickle", "rb") as file:
+        pickle.dump(filtered_separators, file, protocol=pickle.HIGHEST_PROTOCOL)
+
+    total_separators_count = 0
+    for gram, separators in filtered_separators.items():
+        print("At {}-gram, {} separators are filtered.".format(gram, len(separators)))
+        total_separators_count += len(separators)
+    print("Total Separators: {}".format(total_separators_count))
+
     print(separator_filter.filter_grams(threshold=0.5))
 
 
