@@ -46,7 +46,7 @@ class Fragment:
             open_success = self.open_next_file()
             if not open_success[0]:
                 if not open_success[1]:
-                    return None
+                    return None, None
                 file_type = self.file_types[self.file_type_index]
                 data = self.files[file_type].read(self.fragment_size)
             else:

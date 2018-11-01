@@ -4,7 +4,7 @@ class SeparatorFilter:
         self.file_types = file_types
         for file_type in file_types:
             self.separators_table[file_type] = dict()
-            for gram, separators in frequent_separators:
+            for gram, separators in frequent_separators.items():
                 self.separators_table[file_type][gram] = dict()
                 for separator in separators:
                     self.separators_table[file_type][gram][separator] = 0
@@ -33,7 +33,7 @@ class SeparatorFilter:
                 if probability >= threshold:
                     for file_type in self.file_types:
                         if self.separators_table[file_type][gram_size][gram] == max(value):
-                            filtered_grams[gram_size].add((gram, file_type))
+                            filtered_grams[gram_size].add((gram, file_type, probability))
                             break
 
         filtered_grams = {k: v for k, v in filtered_grams.items() if len(v) != 0}
