@@ -7,9 +7,9 @@ from separator_filter import SeparatorFilter
 
 def main():
     # Setup Fragment
-    file_types = ["ppt", "mp3"]
-    directories = ["/home/jonghoon/Desktop/ppt1",
-                   "/home/jonghoon/Desktop/mp31"]
+    file_types = ["ppt", "pdf"]
+    directories = ["/home/jonghoon/Desktop/ppt",
+                   "/home/jonghoon/Desktop/pdf"]
     fragment_getter = Fragment(file_types=file_types, directories=directories, fragment_size=4096)
 
     if os.path.exists("./frequent_separators.pickle"):
@@ -52,7 +52,7 @@ def main():
             candidate_separators = separator_checker.make_candidate_separators(frequent_separators_set)
             gram_size += 1
 
-            if gram_size > 5:
+            if gram_size > 10:
                 break
 
             print("\nAt {}-gram:".format(gram_size))
@@ -69,23 +69,24 @@ def main():
             total_separators_count += len(separators)
         print("Total {} separators are selected.".format(total_separators_count))
 
+    print("\nFiltering Separators...")
     separator_filter = SeparatorFilter(file_types, total_frequent_separators)
     fragment, file_type = fragment_getter.get_fragment()
     while fragment is not None:
         separator_filter.count_fragment(fragment=fragment, file_type=file_type)
         fragment, file_type = fragment_getter.get_fragment()
-    filtered_separators = separator_filter.filter_grams(threshold=0.5)
+    filtered_separators = separator_filter.filter_grams(threshold=0.8)
 
-    with open("./filtered_separators.pickle", "rb") as file:
+    with open("./filtered_separators.pickle", "wb") as file:
         pickle.dump(filtered_separators, file, protocol=pickle.HIGHEST_PROTOCOL)
+    print("\nFiltered separators saved.\n")
 
     total_separators_count = 0
     for gram, separators in filtered_separators.items():
         print("At {}-gram, {} separators are filtered.".format(gram, len(separators)))
         total_separators_count += len(separators)
     print("Total Separators: {}".format(total_separators_count))
-
-    print(separator_filter.filter_grams(threshold=0.5))
+    print(filtered_separators)
 
 
 if __name__ == "__main__":
