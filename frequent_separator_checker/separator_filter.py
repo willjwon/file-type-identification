@@ -38,3 +38,27 @@ class SeparatorFilter:
 
         filtered_grams = {k: v for k, v in filtered_grams.items() if len(v) != 0}
         return filtered_grams
+
+    @staticmethod
+    def change_filtered_gram_form(filtered_grams):
+        reformatted_grams = dict()
+        for gram_size, grams in filtered_grams.items():
+            reformatted_grams[gram_size] = dict()
+            for gram, file_type, _ in grams:
+                reformatted_grams[gram_size][gram] = file_type
+
+        return reformatted_grams
+
+    def print_gram_type_statistics(self, formatted_grams):
+        stat = dict()
+        for file_type in self.file_types:
+            stat[file_type] = 0
+
+        total_count = 0
+        for grams in formatted_grams.values():
+            for file_type in grams.values():
+                stat[file_type] += 1
+                total_count += 1
+
+        for file_type, count in stat.items():
+            print("{}: {} ({:.2f}%".format(file_type, count, count / total_count * 100))

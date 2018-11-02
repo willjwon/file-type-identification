@@ -1,4 +1,5 @@
 import os
+from print_progress import print_progress
 
 
 class Fragment:
@@ -33,9 +34,13 @@ class Fragment:
                 self.file_type_index = 0
                 return False, False
 
+            print_progress(self.file_indices[file_type] + 1, len(self.file_paths[file_type]),
+                           self.file_type_index + 1, len(self.file_types))
             return False, True
         else:
             self.files[file_type] = open(self.file_paths[file_type][self.file_indices[file_type]], "rb")
+            print_progress(self.file_indices[file_type] + 1, len(self.file_paths[file_type]),
+                           self.file_type_index + 1, len(self.file_types))
             return True, True
 
     def get_fragment(self):

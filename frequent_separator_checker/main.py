@@ -7,9 +7,14 @@ from separator_filter import SeparatorFilter
 
 def main():
     # Setup Fragment
-    file_types = ["ppt", "pdf"]
-    directories = ["/home/jonghoon/Desktop/ppt",
-                   "/home/jonghoon/Desktop/pdf"]
+    file_types = ["exe", "html", "hwp", "jpg", "mp3", "pdf", "png"]
+    directories = ["/Users/barber/Data/fti_small_data/train_data/exe",
+                   "/Users/barber/Data/fti_small_data/train_data/html",
+                   "/Users/barber/Data/fti_small_data/train_data/hwp",
+                   "/Users/barber/Data/fti_small_data/train_data/jpg",
+                   "/Users/barber/Data/fti_small_data/train_data/mp3",
+                   "/Users/barber/Data/fti_small_data/train_data/pdf",
+                   "/Users/barber/Data/fti_small_data/train_data/png"]
     fragment_getter = Fragment(file_types=file_types, directories=directories, fragment_size=4096)
 
     if os.path.exists("./frequent_separators.pickle"):
@@ -34,8 +39,6 @@ def main():
                 separator_checker.count_fragment(fragment=fragment)
                 fragment, _ = fragment_getter.get_fragment()
 
-            # frequent_separators_list = separator_checker.get_frequent_separators_absolute(top_n=10000)
-            # frequent_separators_list = SeparatorChecker.filter_by_frequency(frequent_separators_list, threshold=0.05)
             frequent_separators_list = separator_checker.get_frequent_separators_frequency(threshold=0.05)
 
             print("\t{} separators are frequent.".format(len(frequent_separators_list)))
@@ -52,7 +55,7 @@ def main():
             candidate_separators = separator_checker.make_candidate_separators(frequent_separators_set)
             gram_size += 1
 
-            if gram_size > 10:
+            if gram_size > 3:
                 break
 
             print("\nAt {}-gram:".format(gram_size))
@@ -75,10 +78,11 @@ def main():
     while fragment is not None:
         separator_filter.count_fragment(fragment=fragment, file_type=file_type)
         fragment, file_type = fragment_getter.get_fragment()
-    filtered_separators = separator_filter.filter_grams(threshold=0.8)
+    filtered_separators = separator_filter.filter_grams(threshold=0.9)
+    formatted_separators = SeparatorFilter.change_filtered_gram_form(filtered_separators)
 
     with open("./filtered_separators.pickle", "wb") as file:
-        pickle.dump(filtered_separators, file, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(formatted_separators, file, protocol=pickle.HIGHEST_PROTOCOL)
     print("\nFiltered separators saved.\n")
 
     total_separators_count = 0
@@ -86,7 +90,8 @@ def main():
         print("At {}-gram, {} separators are filtered.".format(gram, len(separators)))
         total_separators_count += len(separators)
     print("Total Separators: {}".format(total_separators_count))
-    print(filtered_separators)
+    print(formatted_separators)
+    separator_filter.print_gram_type_statistics(formatted_separators)
 
 
 if __name__ == "__main__":
