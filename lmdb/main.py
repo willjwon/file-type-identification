@@ -25,6 +25,7 @@ def main():
                    "/Users/barber/Data/fti_small_data/train_data/pdf",
                    "/Users/barber/Data/fti_small_data/train_data/png"]
     num_fragments = 10
+    step = min(num_fragments, 1000)
     fragment_getter = Fragment(num_fragments=num_fragments,
                                file_types=file_types, directories=directories, fragment_size=4096)
 
@@ -43,7 +44,7 @@ def main():
         item_key += 1
         lmdb_txn.put(str_item_key, datum.SerializeToString())
 
-        if item_key % 1000 == 0:
+        if item_key % step == 0:
             lmdb_txn.commit()
 
         fragment, file_type = fragment_getter.get_fragment()
