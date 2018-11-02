@@ -14,3 +14,5 @@ class GramClassifier:
                 gram = fragment[i:i + gram_size]
                 if gram in self.separators[gram_size].keys():
                     return self.separators[gram_size][gram]
+
+        return None
