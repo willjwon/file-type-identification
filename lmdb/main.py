@@ -1,8 +1,9 @@
-# import lmdb
-# import caffe
+import lmdb
+import caffe
 import os
 import numpy as np
-# from caffe.proto import caffe_pb2
+from compute_bfd import compute_bfd
+from caffe.proto import caffe_pb2
 from fragment import Fragment
 
 
@@ -27,57 +28,26 @@ def main():
     fragment_getter = Fragment(num_fragments=num_fragments,
                                file_types=file_types, directories=directories, fragment_size=4096)
 
+    # LMDB Preparation
+    if not os.path.exists("./lmdb"):
+        os.makedirs("./lmdb")
+    lmdb_env = lmdb.open("./lmdb", map_size=int(1e12))
+    lmdb_txn = lmdb_env.begin(write=True)
+    item_key = 0
+
     fragment, file_type = fragment_getter.get_fragment()
     while fragment is not None:
-        # Do Something here
+        fragment_bfd = compute_bfd(fragment)
+        datum = caffe.io.array_to_datum(fragment_bfd, file_groups[file_type])
+        str_item_key = '{:0>8d}'.format(item_key).encode('ascii')
+        item_key += 1
+        lmdb_txn.put(str_item_key, datum.SerializeToString())
+
+        if item_key % 1000 == 0:
+            lmdb_txn.commit()
+
         fragment, file_type = fragment_getter.get_fragment()
 
 
 if __name__ == "__main__":
     main()
-
-#
-# # LMDB Preparation
-# if not os.path.exists("./lmdb"):
-#     os.makedirs("./lmdb")
-# lmdb_env = lmdb.open("./lmdb", map_size=int(1e12))
-# lmdb_txn = lmdb_env.begin(write=True)
-# item_key = 0
-# datum = caffe_pb2.Datum()
-#
-# # Generate LMDB Value
-# value = [0, 0, 0, 0,
-#          0, 0, 0, 0,
-#          1, 1, 1, 1,
-#          1, 1, 1, 1]
-# data = np.reshape(np.asarray(value), newshape=[1, 4, 4])
-# label = 0
-# datum = caffe.io.array_to_datum(data, label)
-# str_item_key = '{:0>8d}'.format(item_key).encode('ascii')
-# lmdb_txn.put(str_item_key, datum.SerializeToString())
-# item_key += 1
-#
-# value = [0, 1, 1, 0,
-#          1, 0, 0, 1,
-#          1, 0, 0, 1,
-#          0, 1, 1, 0]
-# data = np.reshape(np.asarray(value), newshape=[1, 4, 4])
-# label = 1
-# datum = caffe.io.array_to_datum(data, label)
-# str_item_key = '{:0>8d}'.format(item_key).encode('ascii')
-# lmdb_txn.put(str_item_key, datum.SerializeToString())
-# item_key += 1
-#
-# value = [0, 0, 1, 1,
-#          0, 0, 1, 1,
-#          1, 1, 0, 0,
-#          1, 1, 0, 0]
-# data = np.reshape(np.asarray(value), newshape=[1, 4, 4])
-# label = 2
-# datum = caffe.io.array_to_datum(data, label)
-# str_item_key = '{:0>8d}'.format(item_key).encode('ascii')
-# lmdb_txn.put(str_item_key, datum.SerializeToString())
-# item_key += 1
-#
-# # Commit LMDB
-# lmdb_txn.commit()
