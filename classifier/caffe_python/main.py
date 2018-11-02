@@ -23,38 +23,29 @@ def main():
     fragment_getter = Fragment(num_fragments=2000, file_types=file_types, directories=directories, fragment_size=4096)
 
     # Prepare caffe network
-    net = caffe.Net("./deploy.prototxt", "./models.caffemodel", caffe.TEST)
+    net = caffe.Net("./deploy.prototxt", "./model.caffemodel", caffe.TEST)
     net.blobs["data"].reshape(1, 1, 256, 1)
 
     # Classify
     total_fragments = 0
-    classified_fragments = 0
     correct_fragments = 0
     fragment, file_type = fragment_getter.get_fragment()
     while fragment is not None:
         total_fragments += 1
 
-        # Classify with caffe
         net.blobs["data"].data[...] = compute_bfd(fragment)
         result = net.forward()
-        print(result)
+        prob = result["prob"].tolist()[0]
+        classified_type = file_groups[prob.index(max(prob))]
 
-        #
-        # if classified_type is None:
-        #     fragment, file_type = fragment_getter.get_fragment()
-        #     continue
-        #
-        # classified_fragments += 1
-        # if classified_type == file_type:
-        #     correct_fragments += 1
+        if classified_type == file_type:
+            correct_fragments += 1
 
         fragment, file_type = fragment_getter.get_fragment()
 
-    # print("Total Fragments: {}".format(total_fragments))
-    # print("Classified Fragments: {} ({:.2f}%)".format(classified_fragments,
-    #                                                   classified_fragments / total_fragments * 100))
-    # print("Correct Classification: {} ({:.2f})%".format(correct_fragments,
-    #                                                    correct_fragments / classified_fragments * 100))
+    print("Total Fragments: {}".format(total_fragments))
+    print("Correct Classification: {} ({:.2f})%".format(correct_fragments,
+                                                        correct_fragments / total_fragments * 100))
 
 
 if __name__ == "__main__":
