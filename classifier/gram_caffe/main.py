@@ -1,4 +1,5 @@
 import caffe
+from timer import Timer
 from compute_bfd import compute_bfd
 from gram_classifier import GramClassifier
 from fragment import Fragment
@@ -14,13 +15,13 @@ def main():
                    4: "mp3",
                    5: "pdf",
                    6: "png"}
-    directories = ["/Users/barber/Data/fti_small_data/test_data/exe",
-                   "/Users/barber/Data/fti_small_data/test_data/html",
-                   "/Users/barber/Data/fti_small_data/test_data/hwp",
-                   "/Users/barber/Data/fti_small_data/test_data/jpg",
-                   "/Users/barber/Data/fti_small_data/test_data/mp3",
-                   "/Users/barber/Data/fti_small_data/test_data/pdf",
-                   "/Users/barber/Data/fti_small_data/test_data/png"]
+    directories = ["/home/jonghoon/Desktop/datasets/data/fti_small_data/test_data/exe",
+                   "/home/jonghoon/Desktop/datasets/data/fti_small_data/test_data/html",
+                   "/home/jonghoon/Desktop/datasets/data/fti_small_data/test_data/hwp",
+                   "/home/jonghoon/Desktop/datasets/data/fti_small_data/test_data/jpg",
+                   "/home/jonghoon/Desktop/datasets/data/fti_small_data/test_data/mp3",
+                   "/home/jonghoon/Desktop/datasets/data/fti_small_data/test_data/pdf",
+                   "/home/jonghoon/Desktop/datasets/data/fti_small_data/test_data/png"]
     fragment_getter = Fragment(num_fragments=2000, file_types=file_types, directories=directories, fragment_size=4096)
 
     # Prepare gram network
@@ -30,6 +31,9 @@ def main():
     net = caffe.Net("./deploy.prototxt", "./model.caffemodel", caffe.TEST)
     net.blobs["data"].reshape(1, 1, 256, 1)
 
+    # Timer
+    timer = Timer(name="Elapsed Time")
+
     # Classify
     total_fragments = 0
     classified_fragments = 0
@@ -38,18 +42,19 @@ def main():
     while fragment is not None:
         total_fragments += 1
 
+        timer.start()
         # Try gram classification first
         classified_type = gram_classifier.classify(fragment)
 
         if classified_type is None:
             # Try caffe classification
-            print("caffe!")
             net.blobs["data"].data[...] = compute_bfd(fragment)
             result = net.forward()
             prob = result["prob"].tolist()[0]
             classified_type = file_groups[prob.index(max(prob))]
+            timer.stop()
         else:
-            print("gram!")
+            timer.stop()
             classified_fragments += 1
 
         if classified_type == file_type:
@@ -62,6 +67,7 @@ def main():
                                                       classified_fragments / total_fragments * 100))
     print("Correct Classification: {} ({:.2f})%".format(correct_fragments,
                                                         correct_fragments / total_fragments * 100))
+    timer.print()
 
 
 if __name__ == "__main__":
