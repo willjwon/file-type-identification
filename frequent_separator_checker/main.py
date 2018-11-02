@@ -55,7 +55,7 @@ def main():
             candidate_separators = separator_checker.make_candidate_separators(frequent_separators_set)
             gram_size += 1
 
-            if gram_size > 3:
+            if gram_size > 20:
                 break
 
             print("\nAt {}-gram:".format(gram_size))
