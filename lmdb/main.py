@@ -41,13 +41,16 @@ def main():
         fragment_bfd = compute_bfd(fragment)
         datum = caffe.io.array_to_datum(fragment_bfd, file_groups[file_type])
         str_item_key = '{:0>8d}'.format(item_key).encode('ascii')
-        item_key += 1
         lmdb_txn.put(str_item_key, datum.SerializeToString())
 
+        item_key += 1
         if item_key % step == 0:
             lmdb_txn.commit()
+            lmdb_txn = lmdb_env.begin(write=True)
 
         fragment, file_type = fragment_getter.get_fragment()
+
+    lmdb_txn.commit()
 
 
 if __name__ == "__main__":
