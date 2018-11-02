@@ -1,45 +1,83 @@
+# import lmdb
+# import caffe
 import os
-from settings import Settings
-from lmdb_manager import LMDBManager
-from files_manager import FilesManager
+import numpy as np
+# from caffe.proto import caffe_pb2
+from fragment import Fragment
 
 
 def main():
-    settings = Settings()
+    # Setup Fragment
+    file_types = ["exe", "html", "hwp", "jpg", "mp3", "pdf", "png"]
+    file_groups = {"exe": 0,
+                  "html": 1,
+                  "hwp": 2,
+                  "jpg": 3,
+                  "mp3": 4,
+                  "pdf": 5,
+                  "png": 6}
+    directories = ["/Users/barber/Data/fti_small_data/train_data/exe",
+                   "/Users/barber/Data/fti_small_data/train_data/html",
+                   "/Users/barber/Data/fti_small_data/train_data/hwp",
+                   "/Users/barber/Data/fti_small_data/train_data/jpg",
+                   "/Users/barber/Data/fti_small_data/train_data/mp3",
+                   "/Users/barber/Data/fti_small_data/train_data/pdf",
+                   "/Users/barber/Data/fti_small_data/train_data/png"]
+    num_fragments = 10
+    fragment_getter = Fragment(num_fragments=num_fragments,
+                               file_types=file_types, directories=directories, fragment_size=4096)
 
-    def manipulator(data):
-        return data.histogram(shape=[1, 16, 16])
-
-    if settings.read("num_fragments_per_type", "train") == 0:
-        print("Skipping Train Fragments.")
-    else:
-        print("Generating Train Fragments...")
-
-        train_result_path = settings.read("result", "train")
-        if not os.path.exists(train_result_path):
-            os.makedirs(train_result_path)
-
-        train_files_manager = FilesManager(data_type='train')
-        train_lmdb_manager = LMDBManager(path=train_result_path, files_manager=train_files_manager)
-        train_lmdb_manager.register_manipulator(manipulator=manipulator)
-
-        train_lmdb_manager.process()
-
-    if settings.read("num_fragments_per_type", "test") == 0:
-        print("Skipping Test Fragments.")
-    else:
-        print("Generating Test Fragments...")
-
-        test_result_path = settings.read("result", "test")
-        if not os.path.exists(test_result_path):
-            os.makedirs(test_result_path)
-
-        test_files_manager = FilesManager(data_type='test')
-        test_lmdb_manager = LMDBManager(path=test_result_path, files_manager=test_files_manager)
-        test_lmdb_manager.register_manipulator(manipulator=manipulator)
-
-        test_lmdb_manager.process()
+    fragment, file_type = fragment_getter.get_fragment()
+    while fragment is not None:
+        # Do Something here
+        fragment, file_type = fragment_getter.get_fragment()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
+
+#
+# # LMDB Preparation
+# if not os.path.exists("./lmdb"):
+#     os.makedirs("./lmdb")
+# lmdb_env = lmdb.open("./lmdb", map_size=int(1e12))
+# lmdb_txn = lmdb_env.begin(write=True)
+# item_key = 0
+# datum = caffe_pb2.Datum()
+#
+# # Generate LMDB Value
+# value = [0, 0, 0, 0,
+#          0, 0, 0, 0,
+#          1, 1, 1, 1,
+#          1, 1, 1, 1]
+# data = np.reshape(np.asarray(value), newshape=[1, 4, 4])
+# label = 0
+# datum = caffe.io.array_to_datum(data, label)
+# str_item_key = '{:0>8d}'.format(item_key).encode('ascii')
+# lmdb_txn.put(str_item_key, datum.SerializeToString())
+# item_key += 1
+#
+# value = [0, 1, 1, 0,
+#          1, 0, 0, 1,
+#          1, 0, 0, 1,
+#          0, 1, 1, 0]
+# data = np.reshape(np.asarray(value), newshape=[1, 4, 4])
+# label = 1
+# datum = caffe.io.array_to_datum(data, label)
+# str_item_key = '{:0>8d}'.format(item_key).encode('ascii')
+# lmdb_txn.put(str_item_key, datum.SerializeToString())
+# item_key += 1
+#
+# value = [0, 0, 1, 1,
+#          0, 0, 1, 1,
+#          1, 1, 0, 0,
+#          1, 1, 0, 0]
+# data = np.reshape(np.asarray(value), newshape=[1, 4, 4])
+# label = 2
+# datum = caffe.io.array_to_datum(data, label)
+# str_item_key = '{:0>8d}'.format(item_key).encode('ascii')
+# lmdb_txn.put(str_item_key, datum.SerializeToString())
+# item_key += 1
+#
+# # Commit LMDB
+# lmdb_txn.commit()

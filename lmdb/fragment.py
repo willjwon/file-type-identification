@@ -46,14 +46,23 @@ class Fragment:
                            self.file_type_index + 1, len(self.file_types))
             return True, True
 
+    def reset_type(self, file_type):
+        self.files[file_type].close()
+        self.file_indices[file_type] = 0
+        self.files[file_type] = open(self.file_paths[file_type][self.file_indices[file_type]], "rb")
+        self.left_fragments[file_type] = self.num_fragments
+
     def get_fragment(self):
         file_type = self.file_types[self.file_type_index]
 
         if self.left_fragments[file_type] <= 0:
-            open_success = self.open_next_file()
-            if not open_success[0]:
-                if not open_success[1]:
-                    return None, None
+            self.reset_type(file_type)
+            self.file_type_index += 1
+            if self.file_type_index >= len(self.file_types):
+                self.file_type_index = 0
+                return None, None
+
+            file_type = self.file_types[self.file_type_index]
 
         data = self.files[file_type].read(self.fragment_size)
         while len(data) < self.fragment_size:
