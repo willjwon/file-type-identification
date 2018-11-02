@@ -1,28 +1,28 @@
 # The train/test net protocol buffer definition
 # this follows "ADAM: A METHOD FOR STOCHASTIC OPTIMIZATION"
-net: "/home/jonghoon/Desktop/test/train_val.prototxt"
+net: "/home/jonghoon/Desktop/programs/file-type-identification/classifier/caffe/train_val.prototxt"
 # test_iter specifies how many forward passes the test should carry out.
 # In the case of MNIST, we have test batch size 100 and 100 test iterations,
 # covering the full 10,000 testing images.
-test_iter: 7
+test_iter: 70
 # Carry out testing every 500 training iterations.
-test_interval: 1000
+test_interval: 1700
 # Do not start test at start
-test_initialization: false
+test_initialization: true
 # All parameters are from the cited paper above
-base_lr: 0.0001
+base_lr: 0.0005
 momentum: 0.9
 momentum2: 0.999
 # since Adam dynamically changes the learning rate, we set the base learning
 # rate to a fixed value
 lr_policy: "fixed"
 # Display every 100 iterations
-display: 100
+display: 1700
 # The maximum number of iterations
-max_iter: 10000
+max_iter: 175000
 # snapshot intermediate results
-snapshot: 5000
-snapshot_prefix: "/home/jonghoon/Desktop/test/result"
+snapshot: 1700
+snapshot_prefix: "/home/jonghoon/Desktop/programs/file-type-identification/classifier/caffe/result/"
 # solver mode: CPU or GPU
 type: "Adam"
 solver_mode: CPU

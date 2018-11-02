@@ -8,8 +8,8 @@ layer {
     phase: TRAIN
   }
   data_param {
-    source: "/home/jonghoon/Desktop/fti_small_lmdb/train"
-    batch_size: 100
+    source: "/home/jonghoon/Desktop/datasets/lmdb/fti_1000_lmdb/train"
+    batch_size: 1000
     backend: LMDB
   }
 }
@@ -22,8 +22,8 @@ layer {
     phase: TEST
   }
   data_param {
-    source: "/home/jonghoon/Desktop/fti_small_lmdb/test"
-    batch_size: 100
+    source: "/home/jonghoon/Desktop/datasets/lmdb/fti_1000_lmdb/test"
+    batch_size: 1000
     backend: LMDB
   }
 }
