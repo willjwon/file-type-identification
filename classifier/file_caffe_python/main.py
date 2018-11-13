@@ -22,7 +22,7 @@ def main():
                    "/home/jonghoon/Desktop/datasets/data/fti_data/test/pdf",
                    "/home/jonghoon/Desktop/datasets/data/fti_data/test/png"]
     num_fragments = 10000
-    fragment_getter = Fragment(num_fragments=num_fragments, file_types=file_types, directories=directories, fragment_size=4096)
+    fragment_getter = Fragment(file_types=file_types, directories=directories)
 
     # Prepare caffe network
     net = caffe.Net("./deploy.prototxt", "./model.caffemodel", caffe.TEST)
@@ -41,8 +41,8 @@ def main():
             classification_table[type1][type2] = 0
 
     # Classify
-    fragment, file_type = fragment_getter.get_fragment()
-    while fragment is not None:
+    fragment, file_type, not_last = fragment_getter.get_fragment()
+    while not_last:
         timer.start()
         net.blobs["data"].data[...] = compute_bfd(fragment)
         result = net.forward()
@@ -55,7 +55,7 @@ def main():
             correct_fragments += 1
         classification_table[file_type][classified_type] += 1
 
-        fragment, file_type = fragment_getter.get_fragment()
+        fragment, file_type, not_last = fragment_getter.get_fragment()
     
     print()
     print("Accuracy: {:.2f}%".format(correct_fragments / total_fragments * 100))
