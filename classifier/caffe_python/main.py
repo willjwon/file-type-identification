@@ -57,7 +57,8 @@ def main():
         classification_table[file_type][classified_type] += 1
 
         fragment, file_type = fragment_getter.get_fragment()
-
+    
+    print()
     print("Accuracy: {:.2f}%".format(correct_fragments / total_fragments * 100))
     print("Accuracy Table:")
     print("\t" + "\t".join(file_types))
