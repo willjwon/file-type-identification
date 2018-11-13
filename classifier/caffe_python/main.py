@@ -30,9 +30,16 @@ def main():
     # Setup timer
     timer = Timer(name="Elapsed Time")
 
-    # Classify
+    # Result checker
     total_fragments = 0
     correct_fragments = 0
+    classification_table = dict()
+    for type1 in file_types:
+        classification_table[type1] = dict()
+        for type2 in file_types:
+            classification_table[type1][type2] = 0
+
+    # Classify
     fragment, file_type = fragment_getter.get_fragment()
     while fragment is not None:
         total_fragments += 1
@@ -44,14 +51,22 @@ def main():
         classified_type = file_groups[prob.index(max(prob))]
         timer.stop()
 
+        total_fragments += 1
         if classified_type == file_type:
             correct_fragments += 1
+        classification_table[file_type][classified_type] += 1
 
         fragment, file_type = fragment_getter.get_fragment()
 
-    print("Total Fragments: {}".format(total_fragments))
-    print("Correct Classification: {} ({:.2f})%".format(correct_fragments,
-                                                        correct_fragments / total_fragments * 100))
+    print("Accuracy: {:.2f}%".format(correct_fragments / total_fragments * 100))
+    print("Accuracy Table:")
+    print("\t" + "\t".join(file_types))
+    for type1 in file_types:
+        print("{}\t".format(type1), end="")
+        for type2 in file_types:
+            print("{:3.2f}%".format(classification_table[type1][type2] / 10000 * 100), end="\t")
+        print()
+
     timer.print()
 
 
