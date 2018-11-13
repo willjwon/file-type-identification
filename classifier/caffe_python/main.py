@@ -14,14 +14,15 @@ def main():
                    4: "mp3",
                    5: "pdf",
                    6: "png"}
-    directories = ["/home/jonghoon/Desktop/datasets/data/fti_small_data/test_data/exe",
-                   "/home/jonghoon/Desktop/datasets/data/fti_small_data/test_data/html",
-                   "/home/jonghoon/Desktop/datasets/data/fti_small_data/test_data/hwp",
-                   "/home/jonghoon/Desktop/datasets/data/fti_small_data/test_data/jpg",
-                   "/home/jonghoon/Desktop/datasets/data/fti_small_data/test_data/mp3",
-                   "/home/jonghoon/Desktop/datasets/data/fti_small_data/test_data/pdf",
-                   "/home/jonghoon/Desktop/datasets/data/fti_small_data/test_data/png"]
-    fragment_getter = Fragment(num_fragments=2000, file_types=file_types, directories=directories, fragment_size=4096)
+    directories = ["/home/jonghoon/Desktop/datasets/data/fti_data/test/exe",
+                   "/home/jonghoon/Desktop/datasets/data/fti_data/test/html",
+                   "/home/jonghoon/Desktop/datasets/data/fti_data/test/hwp",
+                   "/home/jonghoon/Desktop/datasets/data/fti_data/test/jpg",
+                   "/home/jonghoon/Desktop/datasets/data/fti_data/test/mp3",
+                   "/home/jonghoon/Desktop/datasets/data/fti_data/test/pdf",
+                   "/home/jonghoon/Desktop/datasets/data/fti_data/test/png"]
+    num_fragments = 100
+    fragment_getter = Fragment(num_fragments=num_fragments, file_types=file_types, directories=directories, fragment_size=4096)
 
     # Prepare caffe network
     net = caffe.Net("./deploy.prototxt", "./model.caffemodel", caffe.TEST)
@@ -65,7 +66,7 @@ def main():
     for type1 in file_types:
         print("{}\t".format(type1), end="")
         for type2 in file_types:
-            print("{:3.2f}%".format(classification_table[type1][type2] / 10000 * 100), end="\t")
+            print("{:3.2f}%".format(classification_table[type1][type2] / num_fragments * 100), end="\t")
         print()
 
     timer.print()
