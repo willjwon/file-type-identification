@@ -21,7 +21,6 @@ def main():
                    "/home/jonghoon/Desktop/datasets/data/fti_data/test/mp3",
                    "/home/jonghoon/Desktop/datasets/data/fti_data/test/pdf",
                    "/home/jonghoon/Desktop/datasets/data/fti_data/test/png"]
-    num_fragments = 10000
     fragment_getter = Fragment(file_types=file_types, directories=directories)
 
     # Prepare caffe network
@@ -56,6 +55,12 @@ def main():
         classification_table[file_type][classified_type] += 1
 
         fragment, file_type, not_last = fragment_getter.get_fragment()
+
+    num_files = dict()
+    for type1 in file_types:
+        num_files[type1] = 0
+        for type2 in file_types:
+            num_files[type1] += classification_table[type1][type2]
     
     print()
     print("Accuracy: {:.2f}%".format(correct_fragments / total_fragments * 100))
@@ -64,7 +69,7 @@ def main():
     for type1 in file_types:
         print("{}\t".format(type1), end="")
         for type2 in file_types:
-            print("{:3.2f}%".format(classification_table[type1][type2] / num_fragments * 100), end="\t")
+            print("{:3.2f}%".format(classification_table[type1][type2] / num_files[type1] * 100), end="\t")
         print()
 
     timer.print()
