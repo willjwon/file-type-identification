@@ -14,13 +14,13 @@ def main():
                    4: "mp3",
                    5: "pdf",
                    6: "png"}
-    directories = ["/home/jonghoon/Desktop/datasets/data/fti_data/test/exe",
-                   "/home/jonghoon/Desktop/datasets/data/fti_data/test/html",
-                   "/home/jonghoon/Desktop/datasets/data/fti_data/test/hwp",
-                   "/home/jonghoon/Desktop/datasets/data/fti_data/test/jpg",
-                   "/home/jonghoon/Desktop/datasets/data/fti_data/test/mp3",
-                   "/home/jonghoon/Desktop/datasets/data/fti_data/test/pdf",
-                   "/home/jonghoon/Desktop/datasets/data/fti_data/test/png"]
+    directories = ["/home/jonghoon/Desktop/datasets/data/fti_file_data/test/exe",
+                   "/home/jonghoon/Desktop/datasets/data/fti_file_data/test/html",
+                   "/home/jonghoon/Desktop/datasets/data/fti_file_data/test/hwp",
+                   "/home/jonghoon/Desktop/datasets/data/fti_file_data/test/jpg",
+                   "/home/jonghoon/Desktop/datasets/data/fti_file_data/test/mp3",
+                   "/home/jonghoon/Desktop/datasets/data/fti_file_data/test/pdf",
+                   "/home/jonghoon/Desktop/datasets/data/fti_file_data/test/png"]
     fragment_getter = Fragment(file_types=file_types, directories=directories)
 
     # Prepare caffe network
@@ -43,8 +43,8 @@ def main():
     file_bytes, file_type, not_last = fragment_getter.get_fragment()
     while not_last:
         result_dict = dict()
-        for file_type in file_types:
-            result_dict[file_type] = 0
+        for ft in file_types:
+            result_dict[ft] = 0
 
         timer.start()
 
@@ -61,7 +61,7 @@ def main():
 
             result_dict[fragment_classified_type] += 1
 
-        classified_type = max(result_dict.items(), key=lambda x: result_dict[x])[0]
+        classified_type = max(result_dict.keys(), key=(lambda x: result_dict[x]))
         timer.stop()
 
         total_fragments += 1
@@ -76,7 +76,7 @@ def main():
         num_files[type1] = 0
         for type2 in file_types:
             num_files[type1] += classification_table[type1][type2]
-    
+
     print()
     print("Accuracy: {:.2f}%".format(correct_fragments / total_fragments * 100))
     print("Accuracy Table:")
