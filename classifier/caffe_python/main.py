@@ -21,7 +21,7 @@ def main():
                    "/home/jonghoon/Desktop/datasets/data/fti_data/test/mp3",
                    "/home/jonghoon/Desktop/datasets/data/fti_data/test/pdf",
                    "/home/jonghoon/Desktop/datasets/data/fti_data/test/png"]
-    num_fragments = 100
+    num_fragments = 10000
     fragment_getter = Fragment(num_fragments=num_fragments, file_types=file_types, directories=directories, fragment_size=4096)
 
     # Prepare caffe network
@@ -43,8 +43,6 @@ def main():
     # Classify
     fragment, file_type = fragment_getter.get_fragment()
     while fragment is not None:
-        total_fragments += 1
-
         timer.start()
         net.blobs["data"].data[...] = compute_bfd(fragment)
         result = net.forward()
